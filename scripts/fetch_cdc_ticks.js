@@ -1,0 +1,1 @@
+const fs=require('fs');const path=require('path');const src=path.join(__dirname,'..','src','data','lone_star_ticks.sample.json');const dst=path.join(__dirname,'..','src','data','lone_star_ticks.geojson');fs.copyFileSync(src,dst);console.log('Copied sample dataset to',dst);
