@@ -4,7 +4,8 @@ const XLSX = require('xlsx');
 
 const XLSX_PATH = path.join(__dirname, '..', '2024-A.americanum-Surveillance-Map-Data.xlsx');
 const COUNTIES_GEOJSON = path.join(__dirname, '..', 'src', 'data', 'us_counties.geojson');
-const OUT_PATH = path.join(__dirname, '..', 'src', 'data', 'lone_star_ticks.geojson');
+const OUT_PATH_SRC = path.join(__dirname, '..', 'src', 'data', 'lone_star_ticks.geojson');
+const OUT_PATH_STATIC = path.join(__dirname, '..', 'static', 'data', 'lone_star_ticks.geojson');
 
 function normalizeStatus(s) {
   if (!s) return null;
@@ -66,9 +67,11 @@ function main() {
   }
 
   console.log('Matched counties:', matched, 'of', counties.features.length);
-  fs.writeFileSync(OUT_PATH, JSON.stringify(counties));
-  console.log('Wrote joined map to', OUT_PATH);
+  fs.mkdirSync(path.dirname(OUT_PATH_SRC), { recursive: true });
+  fs.mkdirSync(path.dirname(OUT_PATH_STATIC), { recursive: true });
+  fs.writeFileSync(OUT_PATH_SRC, JSON.stringify(counties));
+  fs.writeFileSync(OUT_PATH_STATIC, JSON.stringify(counties));
+  console.log('Wrote joined map to', OUT_PATH_SRC, 'and', OUT_PATH_STATIC);
 }
 
 main();
-
