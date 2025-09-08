@@ -1,8 +1,4 @@
 var plugins = [{
-      name: 'gatsby-plugin-manifest',
-      plugin: require('/home/shawnmonk/monk/alphagaldata/node_modules/gatsby-plugin-manifest/gatsby-ssr.js'),
-      options: {"plugins":[],"name":"AlphaGalData","short_name":"AGData","start_url":"/","background_color":"#ffffff","theme_color":"#0f766e","display":"standalone","icon":"static/icon.png","legacy":true,"theme_color_in_head":true,"cache_busting_mode":"query","crossOrigin":"anonymous","include_favicon":true,"cacheDigest":"d41d8cd98f00b204e9800998ecf8427e"},
-    },{
       name: 'gatsby-plugin-sitemap',
       plugin: require('/home/shawnmonk/monk/alphagaldata/node_modules/gatsby-plugin-sitemap/gatsby-ssr.js'),
       options: {"plugins":[],"output":"/","createLinkInHead":true,"entryLimit":45000,"query":"{ site { siteMetadata { siteUrl } } allSitePage { nodes { path } } }","excludes":[]},
