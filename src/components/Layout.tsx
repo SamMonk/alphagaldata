@@ -3,6 +3,11 @@ export default function Layout({ title, children }:{title?:string;children:React
  const fullTitle = title ? `${title} • AlphaGalData` : "AlphaGalData";
  return(<div className="min-h-screen bg-slate-50">
   <Helmet><title>{fullTitle}</title></Helmet>
+  <div className="bg-amber-50 text-amber-900 text-xs border-b border-amber-200">
+   <div className="container py-1">
+    Some links are affiliate. <a href="/disclosure" className="underline">Disclosure</a>.
+   </div>
+  </div>
   <header className="bg-white/90 backdrop-blur sticky top-0 z-10 border-b">
    <div className="container flex items-center justify-between py-3">
     <a href="/" className="font-bold text-lg text-teal-800">AlphaGalData</a>
