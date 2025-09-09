@@ -37,6 +37,24 @@ export default function HeatMap(){
       if (s.includes('no record')) return 'noRecords';
       return 'unknown';
     };
+    // Clear selection if its category is toggled off
+    useEffect(() => {
+      if (!selected) return;
+      const k = canonical(selected?.status);
+      if ((filters as any)[k] !== true) setSelected(null);
+    }, [filters, selected]);
+    // Build filtered feature collection so toggles affect rendered shapes
+    const filteredData = React.useMemo(() => {
+      try {
+        const feats = (data?.features || []).filter((f:any) => {
+          const k = canonical(f?.properties?.status);
+          return (filters as any)[k] === true;
+        });
+        return { ...data, features: feats };
+      } catch {
+        return data;
+      }
+    }, [filters]);
     const counts = React.useMemo(() => {
       const c = { established:0, reported:0, noRecords:0, unknown:0 } as any;
       try {
@@ -67,10 +85,7 @@ export default function HeatMap(){
       }
       return base;
     };
-    const filter = (feature:any) => {
-      const k = canonical(feature?.properties?.status);
-      return (filters as any)[k] === true;
-    };
+    // Filtering handled via filteredData above
 
     const InfoPanel = () => (
       <div className="absolute top-3 left-3 z-[1000] max-w-sm">
@@ -127,7 +142,7 @@ export default function HeatMap(){
         <LegendPanel />
         <MapContainer style={{height:'70vh',width:'100%'}} zoom={4} center={[37.8,-96]} zoomControl={false}>
           <TileLayer attribution='&copy; OpenStreetMap contributors' url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'/>
-          <GeoJSON data={data} style={style} filter={filter} onEachFeature={onEachFeature}
+          <GeoJSON key={JSON.stringify(filters)} data={filteredData} style={style} onEachFeature={onEachFeature}
             pointToLayer={(_feature:any, latlng:any) => L.circleMarker(latlng, { radius:4, color:'#0f766e', fillColor:'#0f766e', fillOpacity:0.65, weight:0 })}
           />
           <ZoomControl position="bottomright" />
