@@ -8,9 +8,9 @@ export default function DownloadsPage(){
       <div className='card'>
         <h1 className='text-2xl font-bold mb-4'>Downloads</h1>
         <ul className='list-disc ml-6 space-y-2'>
-          <li>
+          {/* <li>
             <a href='/downloads/alphagal_cards_v1.pdf' target='_blank' rel='noreferrer'>Legacy: Wallet & Dining Cards (PDF, v1)</a>
-          </li>
+          </li> */}
           <li>
             <a href='/downloads/ags_wallet_card_v1.pdf' target='_blank' rel='noreferrer'>Wallet Card (PDF)</a> — credit‑card size for printing
           </li>
