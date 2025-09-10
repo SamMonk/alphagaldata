@@ -47,7 +47,7 @@ export default function DownloadsPage(){
           </li>
         </ul>
         <div className='text-sm text-slate-600 mt-4'>
-          Tip: If the new cards are missing, run <code>npm run tasks:cards</code> to generate PDFs.
+          Tip: If the new cards are missing, run <code>npm run tasks:cards</code> to regenerate PDFs. The dining card is sized 6×4 inches (landscape). When printing, select landscape orientation or rotate to fit.
         </div>
         <div className='text-xs text-slate-500 mt-2'>Some links above are affiliate links. See our <a className='underline' href='/disclosure'>Disclosure</a>.</div>
       </div>

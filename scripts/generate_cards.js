@@ -18,7 +18,7 @@ const inch = (n) => n * 72; // PDF points per inch
 
 function walletCard() {
   const file = path.join(OUT_DIR, 'ags_wallet_card_v1.pdf');
-  const doc = new PDFDocument({ size: [inch(3.375), inch(2.125)], margins: { top: 12, left: 12, right: 12, bottom: 12 } });
+  const doc = new PDFDocument({ size: [inch(3.375), inch(2.125)], margins: { top: 10, left: 10, right: 10, bottom: 10 } });
   doc.pipe(fs.createWriteStream(file));
 
   // Optional icon
@@ -30,26 +30,26 @@ function walletCard() {
   } catch {}
 
   // Header
-  doc.fillColor('#0f766e').fontSize(10).text('Alpha-gal Syndrome (AGS)', 22, 8, { align: 'left' });
-  doc.moveDown(0.2);
-  doc.fillColor('#111827').fontSize(8).text('Allergy wallet card', { align: 'left' });
-  doc.moveDown(0.4);
+  doc.fillColor('#0f766e').fontSize(9).text('Alpha-gal Syndrome (AGS)', 22, 8, { align: 'left' });
+  doc.moveDown(0.15);
+  doc.fillColor('#111827').fontSize(7.5).text('Allergy wallet card', { align: 'left' });
+  doc.moveDown(0.25);
 
   // Body
-  doc.fontSize(8).fillColor('#111827');
-  doc.text('I have a serious allergy to alpha-gal (galactose-α-1,3-galactose).');
-  doc.moveDown(0.25);
-  doc.text('Please avoid mammalian products in my food and medications:', { continued: false });
+  doc.fontSize(7.5).fillColor('#111827');
+  const innerWidthWallet = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  doc.text('I have a serious allergy to alpha-gal (galactose-α-1,3-galactose).', { width: innerWidthWallet });
+  doc.moveDown(0.15);
+  doc.text('Please avoid mammalian products in my food and medications:', { width: innerWidthWallet });
   const bullets = [
     'No beef, pork, lamb, venison, organ meats',
     'Avoid gelatin; check capsules, marshmallows, gummies',
-    'Avoid lard/tallow/suet; use vegetable oils instead',
-    'Check excipients: gelatin, glycerin, magnesium stearate (animal sources)'
+    'Check excipients: gelatin, glycerin, magnesium stearate'
   ];
   bullets.forEach((b) => { doc.text('• ' + b, { indent: 4 }); });
 
-  doc.moveDown(0.25);
-  doc.text('Emergency: treat as anaphylaxis if needed. Use epinephrine autoinjector if prescribed. Call 911.', { align: 'left' });
+  doc.moveDown(0.15);
+  doc.text('Emergency: treat as anaphylaxis if needed. Use epinephrine if prescribed. Call 911.', { width: innerWidthWallet });
 
   doc.moveDown(0.2);
   doc.fillColor('#6b7280').text('More info: alphagaldata.com/downloads', { align: 'left' });
@@ -60,7 +60,8 @@ function walletCard() {
 
 function diningCard() {
   const file = path.join(OUT_DIR, 'ags_dining_card_v1.pdf');
-  const doc = new PDFDocument({ size: [inch(6), inch(4)], layout: 'landscape', margins: { top: 24, left: 28, right: 28, bottom: 24 } });
+  // Use explicit 6in x 4in page size (landscape). When passing an array, layout is ignored.
+  const doc = new PDFDocument({ size: [inch(6), inch(4)], margins: { top: 24, left: 28, right: 28, bottom: 24 } });
   doc.pipe(fs.createWriteStream(file));
 
   // Optional icon
@@ -79,6 +80,7 @@ function diningCard() {
 
   // Bullets
   doc.fontSize(12);
+  const innerWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
   const bullets = [
     'No mammalian meats: beef, pork, lamb, venison, organ meats (liver, bacon, sausage)',
     'No broths/gravies made from beef/pork bones or drippings',
@@ -87,7 +89,7 @@ function diningCard() {
     'Dairy only if I confirm it is acceptable today',
     'Avoid cross-contact on shared grills, fryers, knives, and cutting boards'
   ];
-  bullets.forEach((b) => { doc.text('• ' + b, { width: inch(8), lineGap: 2 }); });
+  bullets.forEach((b) => { doc.text('• ' + b, { width: innerWidth, lineGap: 2 }); });
 
   doc.moveDown(0.6);
   doc.fillColor('#374151').fontSize(10).text('Thank you! If unsure about an ingredient, please ask me.', { align: 'left' });
