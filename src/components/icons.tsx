@@ -90,6 +90,26 @@ export function IconQuest({ size, ...props }: IconProps) {
   );
 }
 
+export function IconTick({ size, ...props }: IconProps) {
+  // Simple tick silhouette icon
+  return (
+    <svg {...base(size)} {...props}>
+      <path d="M12 2v5" />
+      <path d="M12 7c-2 1-3 3-3 5 0 2 1 4 3 6 2-2 3-4 3-6 0-2-1-4-3-5z" />
+      <path d="M5 7l4 3" />
+      <path d="M19 7l-4 3" />
+      <path d="M4 13l5-1" />
+      <path d="M20 13l-5-1" />
+    </svg>
+  );
+}
+
+type ImgIconProps = React.ImgHTMLAttributes<HTMLImageElement> & { size?: number };
+
+export function IconBrandTick({ size = 18, alt = "Tick icon", ...props }: ImgIconProps) {
+  return <img src="/favicon.svg" width={size} height={size} alt={alt} {...props} />;
+}
+
 export default {
   IconFlask,
   IconMapPin,
@@ -99,5 +119,6 @@ export default {
   IconInfo,
   IconLabcorp,
   IconQuest,
+  IconTick,
+  IconBrandTick,
 };
-

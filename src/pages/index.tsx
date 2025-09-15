@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '../components/Layout';
 import HeatMap from '../components/HeatMap';
+import { IconBrandTick } from '../components/icons';
 
 export default function HomePage() {
   return (
@@ -8,10 +9,7 @@ export default function HomePage() {
       <div className='space-y-8'>
         <section className='card'>
           <h1 className='text-3xl font-bold mb-2'>Alpha-gal Syndrome (AGS): Data, Maps, and Plain-Language Guides</h1>
-          <p className='text-slate-700'>
-            Explore current distribution signals of the lone star tick and learn how to prevent bites, avoid triggers, and
-            work with clinicians. Educational only; not medical advice.
-          </p>
+          <p className='text-slate-700'>Explore current distribution signals of the lone star tick <IconBrandTick className="inline-block align-text-bottom" size={18}/> and learn how to prevent bites, avoid triggers, and work with clinicians. Educational only; not medical advice.</p>
         </section>
 
         <section className='card'>

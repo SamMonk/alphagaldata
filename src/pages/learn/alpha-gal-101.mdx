@@ -4,18 +4,29 @@ description: A plain-language primer on alpha-gal syndrome (AGS).
 ---
 
 import TopicLayout from "../../components/TopicLayout";
+import { IconBrandTick, IconInfo } from "../../components/icons";
 
 export const Head = () => <title>Alpha-gal 101 • AlphaGalData</title>;
 
 <TopicLayout title="Alpha-gal 101" description="A plain-language primer on alpha-gal syndrome (AGS).">
 
-Alpha-gal syndrome (AGS) is a tick-associated allergy to a carbohydrate
+Alpha-gal syndrome (AGS) is a <IconBrandTick className="inline-block align-text-bottom" size={18}/> tick‑associated allergy to a carbohydrate
 called galactose-α-1,3-galactose (alpha-gal) found in most mammals. Many
 people experience delayed reactions (often 3–6 hours) after eating mammalian
 meat or products containing mammalian-derived ingredients.
 
 This site provides educational information only and is not medical advice. If
 you suspect AGS, consult a board‑certified allergist.
+
+<div className="card mt-4">
+  <h2 className="text-lg font-semibold mb-2 inline-flex items-center gap-2"><IconInfo className="text-teal-700"/> Key points</h2>
+  <ul className="list-disc ml-6">
+    <li>Reactions are often delayed 3–6 hours after mammalian foods.</li>
+    <li>Tick bites are linked to sensitization to alpha‑gal.</li>
+    <li>Work with a clinician to confirm diagnosis and plan management.</li>
+  </ul>
+  <div className="text-sm text-slate-600 mt-2">Educational only; not medical advice.</div>
+</div>
 
 ## In this guide
 

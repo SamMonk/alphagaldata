@@ -4,20 +4,21 @@ description: Recognize AGS patterns and learn how clinicians diagnose alpha-gal 
 ---
 
 import TopicLayout from "../../components/TopicLayout";
+import { IconStethoscope, IconBrandTick, IconInfo } from "../../components/icons";
 
 export const Head = () => <title>Symptoms and Diagnosis • AlphaGalData</title>;
 
 <TopicLayout title="Symptoms and Diagnosis" description="Recognize AGS patterns and learn how clinicians diagnose alpha-gal syndrome.">
 
-## Symptom patterns
+## <IconInfo className="text-teal-700"/> Symptom patterns
 
 - Delayed onset: typically 3–6 hours after eating mammalian foods.
 - Range: hives, swelling, GI upset, respiratory symptoms; severity varies.
 - Co-factors: exercise, alcohol, and NSAIDs may intensify reactions.
 
-## Diagnosis overview
+## <IconStethoscope className="text-teal-700"/> Diagnosis overview
 
-- History: tick exposure + delayed reactions after mammalian foods.
+- History: <IconBrandTick className="inline-block align-text-bottom" size={16}/> tick exposure + delayed reactions after mammalian foods.
 - Testing: serum IgE to alpha-gal; clinician-guided evaluation.
 - Management plan: personalize avoidance and emergency preparedness.
 
