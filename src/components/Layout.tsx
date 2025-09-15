@@ -11,7 +11,22 @@ export default function Layout({ title, children }:{title?:string;children:React
   <header className="bg-white/90 backdrop-blur sticky top-0 z-10 border-b">
    <div className="container flex items-center justify-between py-3">
     <a href="/" className="font-bold text-lg text-teal-800">AlphaGalData</a>
-    <nav className="space-x-4"><a href="/testing">Testing</a><a href="/scanner">Scanner</a><a href="/learn/what-is-alpha-gal">Learn</a><a href="/downloads">Downloads</a><a href="/privacy">Privacy</a></nav>
+    <nav className="space-x-4 flex items-center">
+      <a href="/testing">Testing</a>
+      <a href="/scanner">Scanner</a>
+      <div className="relative group inline-block">
+        <a href="/learn" className="inline-flex items-center">Learn</a>
+        <div className="absolute left-0 mt-2 hidden group-hover:block bg-white border rounded shadow text-sm min-w-[220px] p-2">
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/alpha-gal-101">Alpha-gal 101</a>
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/symptoms-and-diagnosis">Symptoms & Diagnosis</a>
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/treatment-and-management">Treatment & Management</a>
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/prevention">Prevention</a>
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/faq">FAQ</a>
+        </div>
+      </div>
+      <a href="/downloads">Downloads</a>
+      <a href="/privacy">Privacy</a>
+    </nav>
    </div></header>
   <main className="container py-8">{children}</main>
   <footer className="mt-16 border-t"><div className="container py-6 text-sm text-slate-600">© {new Date().getFullYear()} AlphaGalData • Educational only, not medical advice.</div></footer>
