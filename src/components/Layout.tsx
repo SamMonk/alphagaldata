@@ -21,6 +21,9 @@ export default function Layout({ title, children }:{title?:string;children:React
           <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/symptoms-and-diagnosis">Symptoms & Diagnosis</a>
           <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/treatment-and-management">Treatment & Management</a>
           <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/prevention">Prevention</a>
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/wallet-card-guide">Wallet Card Guide</a>
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/dining-card-guide">Dining Card Guide</a>
+          <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/printing-alpha-gal-cards">Print the Cards</a>
           <a className="block px-3 py-1 hover:bg-slate-50 rounded" href="/learn/faq">FAQ</a>
         </div>
       </div>

@@ -1,9 +1,14 @@
 import type { GatsbyConfig } from "gatsby";
-const siteUrl = process.env.SITE_URL || "http://localhost:8000";
+const siteUrl = (process.env.SITE_URL || "https://alphagaldata.com").replace(/\/+$/, "");
 
 const plugins: any[] = [
   `gatsby-plugin-postcss`,
-  `gatsby-plugin-sitemap`,
+  {
+    resolve: `gatsby-plugin-sitemap`,
+    options: {
+      createLinkInHead: true,
+    },
+  },
   { resolve: `gatsby-plugin-robots-txt`, options: { policy: [{ userAgent: `*`, allow: `/` }] } },
   { resolve: `gatsby-plugin-mdx`, options: { extensions: [`.mdx`, `.md`] } },
   { resolve: `gatsby-source-filesystem`, options: { name: `content`, path: `${__dirname}/src/pages` } },

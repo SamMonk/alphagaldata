@@ -34,6 +34,18 @@ export default function HomePage() {
             <h3 className='text-lg font-semibold'>Prevention</h3>
             <p className='text-slate-700'>Reduce tick exposure for you and your household.</p>
           </a>
+          <a className='card block hover:shadow-md transition' href='/learn/wallet-card-guide'>
+            <h3 className='text-lg font-semibold'>Wallet Card Guide</h3>
+            <p className='text-slate-700'>Carry a quick-reference summary for emergencies.</p>
+          </a>
+          <a className='card block hover:shadow-md transition' href='/learn/dining-card-guide'>
+            <h3 className='text-lg font-semibold'>Dining Card Guide</h3>
+            <p className='text-slate-700'>Explain AGS needs to restaurant teams with confidence.</p>
+          </a>
+          <a className='card block hover:shadow-md transition' href='/learn/printing-alpha-gal-cards'>
+            <h3 className='text-lg font-semibold'>Print the Cards</h3>
+            <p className='text-slate-700'>Step-by-step printing tips for wallet and dining cards.</p>
+          </a>
         </section>
 
         <section className='card'>
