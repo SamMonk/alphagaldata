@@ -2,3 +2,7 @@ node_modules
 .cache
 tf/*
 public/*
+
+# Environment overrides
+.env*
+!.env.example

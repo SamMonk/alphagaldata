@@ -1,11 +1,21 @@
 import "leaflet/dist/leaflet.css";
 import "./src/styles/global.css";
 
+const MEASUREMENT_ID = process.env.GATSBY_GA4_MEASUREMENT_ID || "G-Y9DXW6X4E2";
+
 export const onRouteUpdate = ({ location }) => {
   if (typeof window === "undefined") return;
-  if (typeof window.gtag !== "function") return;
 
   const page_path = location?.pathname + (location?.search || "") + (location?.hash || "");
-  // Send a GA4 page_view on client-side route changes
-  window.gtag('event', 'page_view', { page_path });
+
+  if (Array.isArray(window.dataLayer)) {
+    window.dataLayer.push({
+      event: "page_view",
+      page_path,
+    });
+  }
+
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "page_view", { page_path, send_to: MEASUREMENT_ID });
+  }
 };
