@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "generated_at": "2025-09-25T02:19:39+00:00",
+    "source_count": 2,
+    "sources": [
+      {
+        "name": "FDA Food Enforcement",
+        "url": "https://api.fda.gov/food/enforcement.json"
+      },
+      {
+        "name": "OpenFoodFacts",
+        "url": "https://world.openfoodfacts.org/"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "fallback-beef",
+      "name": "Beef (all cuts)",
+      "source": "Fallback",
+      "risk_level": "avoid",
+      "notes": "Red meat from mammals carries the alpha-gal sugar and should be avoided.",
+      "references": [
+        {
+          "label": "CDC guidance",
+          "url": "https://www.cdc.gov/alpha-gal-syndrome/index.html"
+        }
+      ]
+    },
+    {
+      "id": "fallback-gelatin",
+      "name": "Gelatin",
+      "source": "Fallback",
+      "risk_level": "high",
+      "notes": "Often derived from mammalian collagen. Verify source before consuming.",
+      "references": [
+        {
+          "label": "Alpha-gal research network",
+          "url": "https://alphagalinformation.org/"
+        }
+      ]
+    }
+  ]
+}

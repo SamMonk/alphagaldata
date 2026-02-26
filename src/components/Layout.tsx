@@ -14,6 +14,8 @@ export default function Layout({ title, children }:{title?:string;children:React
     <nav className="space-x-4 flex items-center">
       <a href="/testing">Testing</a>
       <a href="/scanner">Scanner</a>
+      <a href="/recipes">Recipes</a>
+      <a href="/heat-map">Heat Map</a>
       <div className="relative group inline-block">
         <a href="/learn" className="inline-flex items-center">Learn</a>
         <div className="absolute left-0 mt-2 hidden group-hover:block bg-white border rounded shadow text-sm min-w-[220px] p-2">

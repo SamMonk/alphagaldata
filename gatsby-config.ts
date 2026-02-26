@@ -11,7 +11,8 @@ const plugins: any[] = [
   },
   { resolve: `gatsby-plugin-robots-txt`, options: { policy: [{ userAgent: `*`, allow: `/` }] } },
   { resolve: `gatsby-plugin-mdx`, options: { extensions: [`.mdx`, `.md`] } },
-  { resolve: `gatsby-source-filesystem`, options: { name: `content`, path: `${__dirname}/src/pages` } },
+  { resolve: `gatsby-source-filesystem`, options: { name: `pages`, path: `${__dirname}/src/pages` } },
+  { resolve: `gatsby-source-filesystem`, options: { name: `articles`, path: `${__dirname}/content` } },
   {
     resolve: `gatsby-plugin-manifest`,
     options: {

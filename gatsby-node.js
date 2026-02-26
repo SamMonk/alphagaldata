@@ -1,6 +1,45 @@
 const fs = require("fs");
 const path = require("path");
 
+exports.createPages = async ({ graphql, actions, reporter }) => {
+  const { createPage } = actions;
+  const template = path.resolve(__dirname, 'src/templates/learn-article.tsx');
+
+  const result = await graphql(`
+    {
+      allMdx(filter: { internal: { contentFilePath: { regex: "/content/" } } }) {
+        nodes {
+          id
+          frontmatter {
+            slug
+          }
+          internal {
+            contentFilePath
+          }
+        }
+      }
+    }
+  `);
+
+  if (result.errors) {
+    reporter.panicOnBuild('Error loading MDX content', result.errors);
+    return;
+  }
+
+  const nodes = result.data?.allMdx?.nodes || [];
+
+  nodes.forEach((node) => {
+    const slug = node.frontmatter?.slug || `/content/${node.id}`;
+    createPage({
+      path: slug,
+      component: `${template}?__contentFilePath=${node.internal.contentFilePath}`,
+      context: {
+        id: node.id,
+      },
+    });
+  });
+};
+
 exports.onPostBuild = async ({ reporter }) => {
   const publicDir = path.join(__dirname, "public");
   const sitemapIndexPath = path.join(publicDir, "sitemap-index.xml");

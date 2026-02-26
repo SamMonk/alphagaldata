@@ -18,6 +18,7 @@
   "include": [
     "src/**/*",
     "gatsby-*.ts",
-    "scripts/**/*"
+    "scripts/**/*",
+    "config/**/*.json"
   ]
 }

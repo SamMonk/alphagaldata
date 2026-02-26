@@ -38,3 +38,4 @@ Static site with Leaflet heat map, pages, and nightly tasks. See `DEPLOY.md` and
 Set the following environment variables for analytics:
 - `GATSBY_GA4_MEASUREMENT_ID` (defaults to `G-Y9DXW6X4E2` if unset)
 - `GATSBY_GTM_CONTAINER_ID` (optional – when provided, GTM loads GA4 + conversion tags)
+- Ingredient data now syncs from `../data-bot/datasets/alphagal/ingredients.json`. `npm run build` runs `npm run prepare:data` to copy the latest dataset; set `INGREDIENTS_SOURCE` to override the source path when running in CI.

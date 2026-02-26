@@ -1,0 +1,52 @@
+{
+  "programs": {
+    "vistaprint": {
+      "programId": "vistaprint-alpha",
+      "category": "print",
+      "url": "https://www.vistaprint.com/?rfid=alpha-gal-wallet",
+      "description": "Upload wallet cards, choose matte finish, and ship within 3-5 days."
+    },
+    "moo": {
+      "programId": "moo-alpha",
+      "category": "print",
+      "url": "https://www.moo.com/us/custom-business-cards?utm_source=alphagal",
+      "description": "Premium rounded cards for durable wallet copies."
+    },
+    "zazzle": {
+      "programId": "zazzle-alpha",
+      "category": "print",
+      "url": "https://www.zazzle.com/api/wallet_cards?rf=alphagal",
+      "description": "Budget-friendly reprints with gloss and matte options."
+    },
+    "everlywell": {
+      "programId": "everlywell-test",
+      "category": "testing",
+      "url": "https://www.shareasale.com/r.cfm?b=everlywell&u=alphagal",
+      "description": "At-home IgE panel to discuss with your allergist."
+    },
+    "letstalkdx": {
+      "programId": "letstalk-alpha",
+      "category": "testing",
+      "url": "https://letstalkdx.com/alpha-gal?aff=alphagal",
+      "description": "Clinical partners with alpha-gal aware care coordinators."
+    },
+    "shopagfriendly": {
+      "programId": "safemarket-alpha",
+      "category": "marketplaces",
+      "url": "https://shopagfriendly.com/?partner=alphagal",
+      "description": "Curated pantry, personal care, and household goods vetted for AGS."
+    },
+    "etsy": {
+      "programId": "etsy-alpha",
+      "category": "marketplaces",
+      "url": "https://www.etsy.com/search?q=alpha+gal+friendly&ref=alphagal",
+      "description": "Community-made alternatives for gelatin-free sweets and snacks."
+    }
+  },
+  "placements": {
+    "wallet_cards": ["vistaprint", "moo", "zazzle"],
+    "dining_cards": ["vistaprint", "moo", "zazzle"],
+    "testing": ["everlywell", "letstalkdx"],
+    "marketplaces": ["shopagfriendly", "etsy"]
+  }
+}

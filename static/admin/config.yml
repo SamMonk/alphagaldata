@@ -1,0 +1,31 @@
+backend:
+  name: s3
+  bucket: alphagal-decapcms
+  region: us-east-1
+  cognito_user_pool_id: us-east-1_Gj01zboi3
+  cognito_app_client_id: 6i65tnlfc53c51cpgem8v5fvne
+  cognito_identity_pool_id: us-east-1:50c9f758-eb27-481e-96da-595b9c7edb18
+
+media_folder: "static/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "recipes"
+    label: "Recipes"
+    folder: "content/recipes"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string", hint: "Example: /recipes/your-recipe" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Servings", name: "servings", widget: "string", required: false }
+      - { label: "Prep Time", name: "prep_time", widget: "string", required: false }
+      - { label: "Cook Time", name: "cook_time", widget: "string", required: false }
+      - { label: "Safety Notes", name: "safety_notes", widget: "list", required: false }
+      - { label: "Ingredients", name: "ingredients", widget: "list" }
+      - { label: "Steps", name: "steps", widget: "list" }
+      - { label: "Body", name: "body", widget: "markdown", required: false }

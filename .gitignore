@@ -1,7 +1,14 @@
 node_modules
 .cache
-tf/*
 public/*
+
+# Terraform — track .tf source, ignore runtime/secret files
+tf/.terraform/
+tf/*.tfstate
+tf/*.tfstate.backup
+tf/*.tfvars
+tf/override.tf
+tf/override.tf.json
 
 # Environment overrides
 .env*

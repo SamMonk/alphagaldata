@@ -1,4 +1,5 @@
 const React = require("react");
+const AuthProviderWrapper = require("./src/components/auth-provider-wrapper").default;
 
 exports.onRenderBody = ({ setHeadComponents, setPreBodyComponents, pathname }) => {
   if (process.env.NODE_ENV !== "production") return;
@@ -79,4 +80,8 @@ exports.onRenderBody = ({ setHeadComponents, setPreBodyComponents, pathname }) =
   if (headComponents.length > 0) {
     setHeadComponents(headComponents);
   }
+};
+
+exports.wrapRootElement = ({ element }) => {
+  return React.createElement(AuthProviderWrapper, null, element);
 };
