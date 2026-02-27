@@ -25,7 +25,12 @@ collections:
       - { label: "Servings", name: "servings", widget: "string", required: false }
       - { label: "Prep Time", name: "prep_time", widget: "string", required: false }
       - { label: "Cook Time", name: "cook_time", widget: "string", required: false }
-      - { label: "Safety Notes", name: "safety_notes", widget: "list", required: false }
-      - { label: "Ingredients", name: "ingredients", widget: "list" }
-      - { label: "Steps", name: "steps", widget: "list" }
-      - { label: "Body", name: "body", widget: "markdown", required: false }
+      - { label: "Featured Image", name: "image", widget: "image", required: false, hint: "Upload a photo of the finished dish." }
+      - label: "Safety Notes"
+        name: "safety_notes"
+        widget: "list"
+        required: false
+        hint: "Label-reading tips and substitution warnings for alpha-gal safety. Be specific — e.g. 'Check broth label for carrageenan'."
+      - { label: "Ingredients", name: "ingredients", widget: "list", hint: "One ingredient per line, with quantity." }
+      - { label: "Steps", name: "steps", widget: "list", hint: "One instruction step per line." }
+      - { label: "Body (optional extra notes)", name: "body", widget: "markdown", required: false }

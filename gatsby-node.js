@@ -3,7 +3,8 @@ const path = require("path");
 
 exports.createPages = async ({ graphql, actions, reporter }) => {
   const { createPage } = actions;
-  const template = path.resolve(__dirname, 'src/templates/learn-article.tsx');
+  const learnTemplate = path.resolve(__dirname, 'src/templates/learn-article.tsx');
+  const recipeTemplate = path.resolve(__dirname, 'src/templates/recipe.tsx');
 
   const result = await graphql(`
     {
@@ -30,6 +31,9 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
 
   nodes.forEach((node) => {
     const slug = node.frontmatter?.slug || `/content/${node.id}`;
+    const isRecipe = node.internal.contentFilePath.includes('/content/recipes/');
+    const template = isRecipe ? recipeTemplate : learnTemplate;
+
     createPage({
       path: slug,
       component: `${template}?__contentFilePath=${node.internal.contentFilePath}`,
