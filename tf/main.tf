@@ -40,6 +40,26 @@ resource "aws_acm_certificate_validation" "cf_cert_validation" {
   validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
 }
 
+# Rewrites /path and /path/ to /path/index.html so S3 serves Gatsby SSG pages.
+resource "aws_cloudfront_function" "index_rewrite" {
+  name    = "alphagal-index-rewrite"
+  runtime = "cloudfront-js-2.0"
+  comment = "Append /index.html to directory-style paths for Gatsby SSG on S3"
+  publish = true
+  code    = <<-EOF
+    function handler(event) {
+      var request = event.request;
+      var uri = request.uri;
+      if (uri.endsWith("/")) {
+        request.uri += "index.html";
+      } else if (!uri.split("/").pop().includes(".")) {
+        request.uri += "/index.html";
+      }
+      return request;
+    }
+  EOF
+}
+
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = "alphagal-oac"
   description                       = "OAC for S3 origin alphagal"
@@ -71,6 +91,11 @@ resource "aws_cloudfront_distribution" "site" {
 
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized
     compress        = true
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.index_rewrite.arn
+    }
   }
 
   price_class = var.price_class
