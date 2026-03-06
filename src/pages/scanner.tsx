@@ -220,36 +220,140 @@ export default function ScannerPage(){
     setLoading(true);
     try {
       const ZX = await import('@zxing/browser');
-      const codeReader = new ZX.BrowserMultiFormatReader();
+      const ZXLib = await import('@zxing/library');
+
+      // Load the image
       const img = new Image();
       img.src = capturedImage;
       await new Promise<void>((resolve, reject) => {
         img.onload = () => resolve();
         img.onerror = () => reject(new Error('Failed to load image'));
       });
-      // Create a canvas to pass to ZXing
-      const c = document.createElement('canvas');
-      c.width = img.width;
-      c.height = img.height;
-      const ctx = c.getContext('2d')!;
-      ctx.drawImage(img, 0, 0);
-      const result = await codeReader.decodeFromCanvas(c);
-      const txt = result?.getText?.();
-      if (txt && /^\d{8,14}$/.test(txt)) {
-        setCode(txt);
-        lookup(txt);
-      } else if (txt) {
-        setCode(txt);
-        setError(`Barcode found ("${txt}") but it doesn't look like a product barcode (expected 8–14 digits).`);
+
+      // Try decoding with multiple strategies
+      const hints = new Map<any, any>();
+      hints.set(ZXLib.DecodeHintType.TRY_HARDER, true);
+
+      // Attempt 1: full image
+      // Attempt 2: grayscale + contrast-enhanced
+      // Attempt 3: center-cropped (50% region)
+      // Attempt 4: horizontal strip (middle 30% height, for close-up barcode photos)
+      const canvases: HTMLCanvasElement[] = [];
+
+      // Full image
+      const c1 = document.createElement('canvas');
+      c1.width = img.width; c1.height = img.height;
+      c1.getContext('2d')!.drawImage(img, 0, 0);
+      canvases.push(c1);
+
+      // Grayscale + contrast boost
+      const c2 = document.createElement('canvas');
+      c2.width = img.width; c2.height = img.height;
+      const ctx2 = c2.getContext('2d')!;
+      ctx2.filter = 'grayscale(1) contrast(2)';
+      ctx2.drawImage(img, 0, 0);
+      canvases.push(c2);
+
+      // Center crop (50%)
+      const cropW = Math.floor(img.width * 0.7);
+      const cropH = Math.floor(img.height * 0.7);
+      const c3 = document.createElement('canvas');
+      c3.width = cropW; c3.height = cropH;
+      c3.getContext('2d')!.drawImage(img,
+        (img.width - cropW) / 2, (img.height - cropH) / 2, cropW, cropH,
+        0, 0, cropW, cropH
+      );
+      canvases.push(c3);
+
+      // Horizontal strip through middle (for close-up barcode shots)
+      const stripH = Math.floor(img.height * 0.3);
+      const c4 = document.createElement('canvas');
+      c4.width = img.width; c4.height = stripH;
+      c4.getContext('2d')!.drawImage(img,
+        0, (img.height - stripH) / 2, img.width, stripH,
+        0, 0, img.width, stripH
+      );
+      canvases.push(c4);
+
+      // Upscaled 2x (helps with small/low-res barcodes)
+      const c5 = document.createElement('canvas');
+      c5.width = img.width * 2; c5.height = img.height * 2;
+      const ctx5 = c5.getContext('2d')!;
+      ctx5.imageSmoothingEnabled = false;
+      ctx5.drawImage(img, 0, 0, c5.width, c5.height);
+      canvases.push(c5);
+
+      let decoded: string | null = null;
+      for (const canvas of canvases) {
+        try {
+          const codeReader = new ZX.BrowserMultiFormatReader(hints);
+          const result = codeReader.decodeFromCanvas(canvas);
+          const txt = result?.getText?.();
+          if (txt) { decoded = txt; break; }
+        } catch {
+          // try next strategy
+        }
+      }
+
+      if (decoded && /^\d{8,14}$/.test(decoded)) {
+        setCode(decoded);
+        lookup(decoded);
+      } else if (decoded) {
+        setCode(decoded);
+        setError(`Barcode found ("${decoded}") but it doesn't look like a product barcode (expected 8–14 digits).`);
         setLoading(false);
       } else {
-        setError('No barcode detected in this image. Try capturing a clearer photo.');
+        setError('No barcode detected. Tips: crop to just the barcode area, ensure good lighting, and avoid glare or blur.');
         setLoading(false);
       }
     } catch (e: any) {
-      setError('No barcode detected in this image. Try capturing a clearer photo.');
+      setError('No barcode detected. Tips: crop to just the barcode area, ensure good lighting, and avoid glare or blur.');
       setLoading(false);
     }
+  };
+
+  /** Try to extract just the ingredients portion from OCR text */
+  const extractIngredients = (raw: string): { extracted: string; wasFiltered: boolean } => {
+    // Normalize whitespace but preserve newlines for section detection
+    const text = raw.replace(/\r\n/g, '\n').replace(/[ \t]+/g, ' ');
+
+    // Look for "ingredients" header/label — common patterns on food labels
+    // Match "INGREDIENTS:", "Ingredients:", "INGREDIENTS", etc.
+    const patterns = [
+      /ingredients\s*[:\-—]\s*/i,
+      /ingredients\s*\n/i,
+    ];
+
+    for (const pattern of patterns) {
+      const match = pattern.exec(text);
+      if (match) {
+        const start = match.index + match[0].length;
+        let section = text.slice(start);
+
+        // Try to find where ingredients end — common next-section headers
+        const stopPatterns = [
+          /\n\s*(nutrition|manufactured|distributed|produced|allergen|allergy|warning|caution|storage|directions|best before|use by|serving|contains|may contain|for allergens|net w[te])/i,
+          /\n\s*(calories|total fat|sodium|protein|vitamin|iron|calcium)/i,
+        ];
+
+        for (const stop of stopPatterns) {
+          const stopMatch = stop.exec(section);
+          if (stopMatch) {
+            section = section.slice(0, stopMatch.index);
+            break;
+          }
+        }
+
+        // Clean up: collapse newlines to spaces (ingredient lists wrap across lines)
+        const cleaned = section.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+        if (cleaned.length > 10) {
+          return { extracted: cleaned, wasFiltered: true };
+        }
+      }
+    }
+
+    // Fallback: return full text collapsed to single line
+    return { extracted: text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim(), wasFiltered: false };
   };
 
   const readIngredients = async () => {
@@ -266,11 +370,15 @@ export default function ScannerPage(){
         setError('No text detected in this image. Try a clearer photo of the ingredient label.');
         return;
       }
-      setPasteText(text);
+      const { extracted, wasFiltered } = extractIngredients(text);
+      setPasteText(extracted);
       setOcrStatus(null);
       // Auto-trigger watchlist check
       setProduct(null);
-      setPasteResult(text);
+      setPasteResult(extracted);
+      if (!wasFiltered) {
+        setError('Could not isolate the ingredients section — showing all detected text. You can edit it below before checking.');
+      }
     } catch (e: any) {
       setOcrStatus(null);
       setError('OCR failed: ' + (e?.message || 'Unknown error'));
