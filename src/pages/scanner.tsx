@@ -146,13 +146,18 @@ export default function ScannerPage(){
   const [active, setActive] = React.useState<boolean>(false);
   const [pasteText, setPasteText] = React.useState<string>('');
   const [pasteResult, setPasteResult] = React.useState<string | null>(null);
+  const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
+  const [ocrStatus, setOcrStatus] = React.useState<string | null>(null);
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const readerRef = React.useRef<ZXingReader | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const startScanner = async () => {
     if (typeof window === 'undefined') return;
     try {
       setError(null);
+      setCapturedImage(null);
       const ZX = await import('@zxing/browser');
       const codeReader = new ZX.BrowserMultiFormatReader();
       readerRef.current = codeReader;
@@ -180,6 +185,101 @@ export default function ScannerPage(){
       stream?.getTracks().forEach(t => t.stop());
       if (videoRef.current) videoRef.current.srcObject = null;
     } catch {}
+  };
+
+  const captureFrame = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0);
+    const dataUrl = canvas.toDataURL('image/png');
+    setCapturedImage(dataUrl);
+    stopScanner();
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCapturedImage(reader.result as string);
+      setError(null);
+    };
+    reader.readAsDataURL(file);
+    // Reset file input so the same file can be re-selected
+    e.target.value = '';
+  };
+
+  const decodeBarcode = async () => {
+    if (!capturedImage) return;
+    setError(null);
+    setLoading(true);
+    try {
+      const ZX = await import('@zxing/browser');
+      const codeReader = new ZX.BrowserMultiFormatReader();
+      const img = new Image();
+      img.src = capturedImage;
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Failed to load image'));
+      });
+      // Create a canvas to pass to ZXing
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const ctx = c.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      const result = await codeReader.decodeFromCanvas(c);
+      const txt = result?.getText?.();
+      if (txt && /^\d{8,14}$/.test(txt)) {
+        setCode(txt);
+        lookup(txt);
+      } else if (txt) {
+        setCode(txt);
+        setError(`Barcode found ("${txt}") but it doesn't look like a product barcode (expected 8–14 digits).`);
+        setLoading(false);
+      } else {
+        setError('No barcode detected in this image. Try capturing a clearer photo.');
+        setLoading(false);
+      }
+    } catch (e: any) {
+      setError('No barcode detected in this image. Try capturing a clearer photo.');
+      setLoading(false);
+    }
+  };
+
+  const readIngredients = async () => {
+    if (!capturedImage) return;
+    setOcrStatus('Initializing OCR…');
+    setError(null);
+    try {
+      const Tesseract = await import('tesseract.js');
+      setOcrStatus('Reading text…');
+      const { data } = await Tesseract.recognize(capturedImage, 'eng');
+      const text = data.text?.trim();
+      if (!text) {
+        setOcrStatus(null);
+        setError('No text detected in this image. Try a clearer photo of the ingredient label.');
+        return;
+      }
+      setPasteText(text);
+      setOcrStatus(null);
+      // Auto-trigger watchlist check
+      setProduct(null);
+      setPasteResult(text);
+    } catch (e: any) {
+      setOcrStatus(null);
+      setError('OCR failed: ' + (e?.message || 'Unknown error'));
+    }
+  };
+
+  const clearCapture = () => {
+    setCapturedImage(null);
+    setOcrStatus(null);
   };
 
   const lookup = async (barcode: string) => {
@@ -245,19 +345,77 @@ export default function ScannerPage(){
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         {/* Left column: inputs */}
         <div className="space-y-4">
-          {/* Barcode scanner */}
+          {/* Camera / Photo card */}
           <div className="card p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="font-semibold">Barcode Scanner</div>
+            <div className="font-semibold mb-2">Camera / Photo</div>
+
+            {/* Camera controls */}
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               {!active ? (
-                <button className="btn" onClick={startScanner}>Start camera</button>
+                <button className="btn" onClick={startScanner}>Start Camera</button>
               ) : (
-                <button className="btn" onClick={stopScanner}>Stop</button>
+                <>
+                  <button className="btn" onClick={stopScanner}>Stop</button>
+                  <button className="btn" onClick={captureFrame}>Capture</button>
+                </>
               )}
+              <button className="btn" onClick={() => fileInputRef.current?.click()}>Upload Photo</button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
             </div>
-            <div className="aspect-video bg-black/80 rounded overflow-hidden">
-              <video ref={videoRef} className="w-full h-full object-cover" muted playsInline/>
-            </div>
+
+            {/* Camera view */}
+            {active && !capturedImage && (
+              <div className="aspect-video bg-black/80 rounded overflow-hidden">
+                <video ref={videoRef} className="w-full h-full object-cover" muted playsInline/>
+              </div>
+            )}
+
+            {/* Hidden video element when camera not active (needed for ref) */}
+            {!active && <video ref={videoRef} className="hidden" muted playsInline/>}
+
+            {/* Captured image preview */}
+            {capturedImage && (
+              <div className="mt-2">
+                <div className="relative">
+                  <img src={capturedImage} alt="Captured" className="w-full rounded border" />
+                  <button
+                    className="absolute top-1 right-1 bg-white/80 hover:bg-white rounded-full px-2 py-0.5 text-xs font-medium"
+                    onClick={clearCapture}
+                    title="Clear photo"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <button className="btn flex-1" onClick={decodeBarcode} disabled={!!ocrStatus || loading}>
+                    Decode Barcode
+                  </button>
+                  <button className="btn flex-1" onClick={readIngredients} disabled={!!ocrStatus || loading}>
+                    Read Ingredients (OCR)
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* OCR progress */}
+            {ocrStatus && (
+              <div className="mt-2 text-sm text-blue-700 flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                </svg>
+                {ocrStatus}
+              </div>
+            )}
+
+            {/* Manual barcode input */}
             <form onSubmit={submitManual} className="mt-3 flex gap-2">
               <input className="input w-full" placeholder="Or enter barcode (8–14 digits)" value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,''))} />
               <button className="btn" type="submit">Lookup</button>
@@ -356,10 +514,14 @@ export default function ScannerPage(){
         </div>
       </div>
 
+      {/* Hidden canvas for frame capture */}
+      <canvas ref={canvasRef} className="hidden" />
+
       <div className="prose max-w-none mt-8">
         <h3>How it works</h3>
         <ul>
           <li>Barcodes are read locally on your device using the camera (ZXing).</li>
+          <li>You can capture a photo to decode a barcode or read ingredient text via OCR (Tesseract.js — runs entirely in your browser).</li>
           <li>We query the Open Food Facts public API for product data and ingredients.</li>
           <li>You can also paste an ingredient list directly from a label or website.</li>
           <li>Ingredients are checked against {WATCHLIST.length} known alpha-gal-related items across three risk tiers:
