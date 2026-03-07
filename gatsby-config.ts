@@ -2,11 +2,13 @@ import type { GatsbyConfig } from "gatsby";
 const siteUrl = (process.env.SITE_URL || "https://alphagaldata.com").replace(/\/+$/, "");
 
 const plugins: any[] = [
+  `gatsby-plugin-react-helmet`,
   `gatsby-plugin-postcss`,
   {
     resolve: `gatsby-plugin-sitemap`,
     options: {
       createLinkInHead: true,
+      excludes: [`/auth`, `/auth/`, `/submit-recipe`, `/submit-recipe/`, `/offline-plugin-app-shell-fallback`, `/offline-plugin-app-shell-fallback/`],
     },
   },
   { resolve: `gatsby-plugin-robots-txt`, options: { policy: [{ userAgent: `*`, allow: `/` }] } },

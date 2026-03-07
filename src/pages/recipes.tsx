@@ -27,7 +27,7 @@ export default function RecipesPage({ data }: RecipesPageProps) {
   );
 
   return (
-    <Layout title="Safe Recipes">
+    <Layout title="Safe Recipes" description="Family-tested recipes safe for alpha-gal syndrome. Each recipe avoids mammalian meat and dairy triggers with clear ingredient lists.">
       <div className="space-y-8">
         <section className="card">
           <h1 className="text-3xl font-bold mb-2">

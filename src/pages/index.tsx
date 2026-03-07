@@ -4,7 +4,7 @@ import { IconBrandTick } from '../components/icons';
 
 export default function HomePage() {
   return (
-    <Layout title='AlphaGalData — Recipes, Tools, and Guides'>
+    <Layout title='AlphaGalData — Recipes, Tools, and Guides' description="Safe recipes, ingredient scanner, tick heat maps, and evidence-based guides for people living with alpha-gal syndrome (AGS).">
       <div className='space-y-8'>
         <section className='card'>
           <div className='text-xs uppercase tracking-widest text-amber-700 font-semibold mb-2'>Safe cooking for alpha-gal</div>

@@ -1,12 +1,10 @@
 import React from 'react';
 import Layout from '../components/Layout';
-import SEO from '../components/SEO';
 import { IconFlask, IconLabcorp, IconQuest, IconMapPin, IconCart, IconStethoscope, IconExternal, IconInfo } from '../components/icons';
 
 export default function TestingPage() {
   return (
-    <Layout title="Testing for Alpha-Gal">
-      <SEO />
+    <Layout title="Testing for Alpha-Gal" description="How to get tested for alpha-gal syndrome. Lab test codes for Labcorp and Quest, find an allergist, and direct-to-consumer testing options.">
       <div className="space-y-8">
         <section className="card flex items-start gap-4">
           <div className="shrink-0 rounded-lg bg-teal-600/10 p-2 text-teal-700">

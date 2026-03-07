@@ -14,7 +14,7 @@ const diningPartners = (affiliateConfig.placements?.dining_cards || []).map((id)
 
 export default function DownloadsPage(){
   return (
-    <Layout title='Downloads'>
+    <Layout title='Downloads' description="Download free alpha-gal wallet cards, dining cards, and printable resources to help communicate your dietary needs.">
       <div className='card'>
         <h1 className='text-2xl font-bold mb-4'>Downloads</h1>
         <ul className='list-disc ml-6 space-y-2'>

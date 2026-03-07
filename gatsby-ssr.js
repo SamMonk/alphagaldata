@@ -61,21 +61,15 @@ exports.onRenderBody = ({ setHeadComponents, setPreBodyComponents, pathname }) =
     );
   }
 
-  const allowAdsense = (() => {
-    if (!pathname) return false;
-    return pathname.startsWith("/learn") || pathname === "/";
-  })();
-
-  if (allowAdsense) {
-    headComponents.push(
-      React.createElement("script", {
-        key: "adsense",
-        async: true,
-        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3564637720581735",
-        crossOrigin: "anonymous",
-      })
-    );
-  }
+  // AdSense script on all pages — required for site ownership verification
+  headComponents.push(
+    React.createElement("script", {
+      key: "adsense",
+      async: true,
+      src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3564637720581735",
+      crossOrigin: "anonymous",
+    })
+  );
 
   if (headComponents.length > 0) {
     setHeadComponents(headComponents);

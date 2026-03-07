@@ -70,7 +70,7 @@ const CardsLandingPage: React.FC = () => {
   const highRiskCount = ingredients.items.filter(item => item.risk_level === 'avoid' || item.risk_level === 'high').length;
 
   return (
-    <Layout title='Wallet & Dining Cards' description='Download wallet and dining cards for alpha-gal syndrome and stay updated with our ingredient risk tracker.'>
+    <Layout title='Wallet & Dining Cards' description='Free printable wallet and dining cards for alpha-gal syndrome. Explain your dietary needs quickly at restaurants and pharmacies.'>
       <section className='max-w-3xl mx-auto space-y-10'>
         <header className='text-center space-y-4'>
           <h1 className='text-3xl font-bold text-slate-900'>Alpha-gal Wallet & Dining Cards</h1>

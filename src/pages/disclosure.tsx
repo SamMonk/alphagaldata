@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 
 export default function DisclosurePage(){
   return (
-    <Layout title="Affiliate Disclosure">
+    <Layout title="Affiliate Disclosure" description="Affiliate disclosure for AlphaGalData. How we use affiliate links and our commitment to editorial independence.">
       <div className="prose max-w-none">
         <h1>Affiliate Disclosure</h1>
         <p>

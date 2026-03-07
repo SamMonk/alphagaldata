@@ -1,7 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
 import Layout from '../components/Layout';
-import SEO from '../components/SEO';
 
 type ZXingReader = any;
 
@@ -437,11 +435,7 @@ export default function ScannerPage(){
   const estimateIngredientCount = (text: string) => text.split(/[,;]/).filter(s => s.trim()).length;
 
   return (
-    <Layout title="Scanner">
-      <SEO />
-      <Helmet>
-        <meta name="description" content="Scan barcodes or paste ingredient lists to check for alpha-gal triggers. Color-coded risk tiers help identify mammalian-derived ingredients." />
-      </Helmet>
+    <Layout title="Scanner" description="Scan barcodes or paste ingredient lists to check for alpha-gal triggers. Color-coded risk tiers help identify mammalian-derived ingredients.">
       <div className="prose max-w-none">
         <h1>Ingredient & product scanner (beta)</h1>
         <p>

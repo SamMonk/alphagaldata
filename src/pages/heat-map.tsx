@@ -4,7 +4,7 @@ import HeatMap from '../components/HeatMap';
 
 export default function HeatMapPage() {
   return (
-    <Layout title='U.S. Heat Map'>
+    <Layout title='U.S. Heat Map' description="Interactive U.S. heat map showing lone star tick activity and alpha-gal syndrome awareness by region. Data from CDC tick surveillance.">
       <div className='space-y-6'>
         <section className='card'>
           <h1 className='text-3xl font-bold mb-2'>U.S. Heat Map</h1>

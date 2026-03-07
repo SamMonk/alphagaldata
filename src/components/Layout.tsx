@@ -1,5 +1,5 @@
 import React from "react";import { Helmet } from "react-helmet";import SEO from "./SEO";import CookieConsent from "./CookieConsent";
-export default function Layout({ title, children }:{title?:string;children:React.ReactNode}){
+export default function Layout({ title, description, children }:{title?:string;description?:string;children:React.ReactNode}){
  const fullTitle = title ? `${title} • AlphaGalData` : "AlphaGalData";
  return(<div className="min-h-screen bg-slate-50">
   <Helmet><title>{fullTitle}</title></Helmet>
@@ -36,6 +36,6 @@ export default function Layout({ title, children }:{title?:string;children:React
   <main className="container py-8">{children}</main>
   <footer className="mt-16 border-t"><div className="container py-6 text-sm text-slate-600">© {new Date().getFullYear()} AlphaGalData • Educational only, not medical advice.</div></footer>
   <footer className="border-t"><div className="container pb-8 text-xs text-slate-500 space-x-4"><a href="/about">About</a><a href="/ads-and-cookies">Ads & Cookies</a><a href="/terms">Terms</a></div></footer>
-  <SEO/>
+  <SEO description={description}/>
   <CookieConsent/>
  </div>);}
