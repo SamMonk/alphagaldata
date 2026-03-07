@@ -214,17 +214,62 @@ export const query = graphql`
 
 export default RecipeTemplate;
 
-export const Head: React.FC<RecipeTemplateProps> = ({ data }) => {
+function toISO8601Duration(timeStr: string | null | undefined): string | null {
+  if (!timeStr) return null;
+  const match = timeStr.match(/(\d+)\s*(hours?|minutes?|mins?|hrs?)/i);
+  if (!match) return null;
+  const num = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+  if (unit.startsWith('h')) return `PT${num}H`;
+  return `PT${num}M`;
+}
+
+export const Head: React.FC<RecipeTemplateProps> = ({ data, location }) => {
   const fm = data.mdx?.frontmatter;
   const title = fm?.title
     ? `${fm.title} | AlphaGalData`
     : 'Safe Recipe | AlphaGalData';
   const description =
     fm?.description ?? 'Alpha-gal safe recipe from AlphaGalData.';
+  const url = `https://alphagaldata.com${location.pathname}`;
+
+  const recipeJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: fm?.title ?? 'Alpha-Gal Safe Recipe',
+    description,
+    author: { '@type': 'Organization', name: 'AlphaGalData' },
+    ...(fm?.image && { image: fm.image }),
+    ...(fm?.servings && { recipeYield: fm.servings }),
+    ...(toISO8601Duration(fm?.prep_time) && { prepTime: toISO8601Duration(fm?.prep_time) }),
+    ...(toISO8601Duration(fm?.cook_time) && { cookTime: toISO8601Duration(fm?.cook_time) }),
+    ...(fm?.ingredients && { recipeIngredient: fm.ingredients }),
+    ...(fm?.steps && { recipeInstructions: fm.steps.map((step, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      text: step,
+    })) }),
+    recipeCategory: 'Alpha-gal safe',
+  };
+
   return (
     <>
       <title>{title}</title>
       <meta name="description" content={description} />
+      <link rel="canonical" href={url} />
+      <meta property="og:type" content="article" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={url} />
+      <meta property="og:site_name" content="AlphaGalData" />
+      {fm?.image && <meta property="og:image" content={fm.image} />}
+      <meta name="twitter:card" content={fm?.image ? 'summary_large_image' : 'summary'} />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      {fm?.image && <meta name="twitter:image" content={fm.image} />}
+      <script type="application/ld+json">
+        {JSON.stringify(recipeJsonLd)}
+      </script>
     </>
   );
 };

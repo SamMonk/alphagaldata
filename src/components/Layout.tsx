@@ -36,6 +36,6 @@ export default function Layout({ title, description, children }:{title?:string;d
   <main className="container py-8">{children}</main>
   <footer className="mt-16 border-t"><div className="container py-6 text-sm text-slate-600">© {new Date().getFullYear()} AlphaGalData • Educational only, not medical advice.</div></footer>
   <footer className="border-t"><div className="container pb-8 text-xs text-slate-500 space-x-4"><a href="/about">About</a><a href="/ads-and-cookies">Ads & Cookies</a><a href="/terms">Terms</a></div></footer>
-  <SEO description={description}/>
+  <SEO description={description} title={fullTitle}/>
   <CookieConsent/>
  </div>);}

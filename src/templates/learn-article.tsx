@@ -57,14 +57,40 @@ export const query = graphql`
 
 export default ArticleTemplate;
 
-export const Head: React.FC<ArticleTemplateProps> = ({ data }) => {
+export const Head: React.FC<ArticleTemplateProps> = ({ data, location }) => {
   const frontmatter = data.mdx?.frontmatter;
   const title = frontmatter?.title ? `${frontmatter.title} | AlphaGalData` : 'AlphaGalData';
   const description = frontmatter?.description ?? 'Alpha-gal resources and ingredient data.';
+  const url = `https://alphagaldata.com${location.pathname}`;
+
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: frontmatter?.title ?? 'AlphaGalData',
+    description,
+    ...(frontmatter?.date && { datePublished: frontmatter.date }),
+    ...(frontmatter?.updated && { dateModified: frontmatter.updated }),
+    author: { '@type': 'Organization', name: 'AlphaGalData', url: 'https://alphagaldata.com' },
+    publisher: { '@type': 'Organization', name: 'AlphaGalData', url: 'https://alphagaldata.com' },
+    mainEntityOfPage: url,
+  };
+
   return (
     <>
       <title>{title}</title>
       <meta name='description' content={description} />
+      <link rel="canonical" href={url} />
+      <meta property="og:type" content="article" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={url} />
+      <meta property="og:site_name" content="AlphaGalData" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <script type="application/ld+json">
+        {JSON.stringify(articleJsonLd)}
+      </script>
     </>
   );
 };
