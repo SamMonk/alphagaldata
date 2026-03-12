@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 120" width="280" height="120">
+  <!--
+    Alpha-Gal Syndrome Medical Alert Tattoo
+    Placement: inner wrist (where medics check for bracelets/tattoos)
+    Designed for high contrast and readability at skin-tone scale
+  -->
+  <defs>
+    <style>
+      .alert-text { font-family: Arial, Helvetica, sans-serif; font-weight: bold; }
+      .detail-text { font-family: Arial, Helvetica, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Background border — tattoo outline -->
+  <rect x="2" y="2" width="276" height="116" rx="12" ry="12"
+        fill="none" stroke="#1a1a1a" stroke-width="3"/>
+
+  <!-- Star of Life (6-pointed, standard EMS symbol) -->
+  <g transform="translate(48, 60)">
+    <!-- Six bars of the Star of Life -->
+    <g fill="#0066cc" stroke="#003d7a" stroke-width="0.5">
+      <!-- Vertical bar -->
+      <rect x="-5" y="-28" width="10" height="56" rx="1"/>
+      <!-- 60-degree bar -->
+      <rect x="-5" y="-28" width="10" height="56" rx="1" transform="rotate(60)"/>
+      <!-- 120-degree bar -->
+      <rect x="-5" y="-28" width="10" height="56" rx="1" transform="rotate(120)"/>
+    </g>
+    <!-- Center circle -->
+    <circle cx="0" cy="0" r="10" fill="#ffffff" stroke="#003d7a" stroke-width="1"/>
+    <!-- Rod of Asclepius (simplified) -->
+    <g stroke="#003d7a" stroke-width="1.5" fill="none">
+      <line x1="0" y1="-7" x2="0" y2="7"/>
+      <!-- Serpent coils -->
+      <path d="M0,-5 C4,-4 4,-1 0,0 C-4,1 -4,4 0,5" stroke-width="1.2"/>
+    </g>
+  </g>
+
+  <!-- Lone Star Tick icon (brand element) -->
+  <g transform="translate(248, 28) scale(0.55)">
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Legs -->
+      <g stroke="#1a1a1a" stroke-width="2.2">
+        <path d="M22 30 L10 24"/>
+        <path d="M22 34 L8 34"/>
+        <path d="M22 38 L10 44"/>
+        <path d="M26 42 L16 52"/>
+        <path d="M42 30 L54 24"/>
+        <path d="M42 34 L56 34"/>
+        <path d="M42 38 L54 44"/>
+        <path d="M38 42 L48 52"/>
+      </g>
+      <!-- Body -->
+      <ellipse cx="32" cy="38" rx="14" ry="16" fill="#1a1a1a"/>
+      <ellipse cx="32" cy="24" rx="8" ry="7" fill="#1a1a1a"/>
+      <path d="M32 16 L32 12" stroke="#1a1a1a" stroke-width="2"/>
+      <!-- White star marking -->
+      <polygon points="0,-3 0.9,-0.9 3,-0.9 1.2,0.5 1.8,2.8 0,1.6 -1.8,2.8 -1.2,0.5 -3,-0.9 -0.9,-0.9"
+               fill="#ffffff" transform="translate(32 34)"/>
+    </g>
+  </g>
+
+  <!-- MEDICAL ALERT header -->
+  <text x="88" y="24" class="alert-text" fill="#cc0000" font-size="14" letter-spacing="1.5">MEDICAL ALERT</text>
+
+  <!-- Primary condition -->
+  <text x="88" y="42" class="alert-text" fill="#1a1a1a" font-size="13">ALPHA-GAL ALLERGY</text>
+
+  <!-- Divider line -->
+  <line x1="88" y1="48" x2="232" y2="48" stroke="#1a1a1a" stroke-width="1.5"/>
+
+  <!-- Critical medication warnings -->
+  <g class="detail-text" fill="#1a1a1a" font-size="10">
+    <text x="88" y="62">
+      <tspan font-weight="bold" fill="#cc0000">NO</tspan>
+      <tspan> MAMMAL-DERIVED MEDS</tspan>
+    </text>
+    <text x="88" y="76">
+      <tspan font-weight="bold" fill="#cc0000">NO</tspan>
+      <tspan> HEPARIN (porcine)</tspan>
+    </text>
+    <text x="88" y="90">
+      <tspan font-weight="bold" fill="#cc0000">NO</tspan>
+      <tspan> GELATIN IV / CAPSULES</tspan>
+    </text>
+    <text x="88" y="104">
+      <tspan font-weight="bold" fill="#cc0000">NO</tspan>
+      <tspan> BOVINE SURGICAL PRODUCTS</tspan>
+    </text>
+  </g>
+
+  <!-- Website reference -->
+  <text x="248" y="108" class="detail-text" fill="#666666" font-size="7"
+        text-anchor="end">alphagaldata.com</text>
+</svg>

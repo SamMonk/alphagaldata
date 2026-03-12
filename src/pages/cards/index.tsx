@@ -64,17 +64,27 @@ const CardsLandingPage: React.FC = () => {
       label: 'Dining Card (PDF)',
       href: '/downloads/ags_dining_card_v1.pdf',
       description: 'Hand to waitstaff to flag cross-contact and safe swaps.'
+    },
+    {
+      label: 'Medical Alert Tattoo (SVG)',
+      href: '/downloads/ags_medical_alert_tattoo.svg',
+      description: 'Full medical alert design with Star of Life, medication warnings, and tick icon.'
+    },
+    {
+      label: 'Wrist Tattoo (SVG)',
+      href: '/downloads/ags_wrist_tattoo_simple.svg',
+      description: 'Simplified black-ink design sized for inner wrist. Works for temporary or permanent tattoos.'
     }
   ];
 
   const highRiskCount = ingredients.items.filter(item => item.risk_level === 'avoid' || item.risk_level === 'high').length;
 
   return (
-    <Layout title='Wallet & Dining Cards' description='Free printable wallet and dining cards for alpha-gal syndrome. Explain your dietary needs quickly at restaurants and pharmacies.'>
+    <Layout title='Cards & Medical Alert Tattoos' description='Free printable wallet cards, dining cards, and medical alert tattoo designs for alpha-gal syndrome. Protect yourself in restaurants and emergency rooms.'>
       <section className='max-w-3xl mx-auto space-y-10'>
         <header className='text-center space-y-4'>
-          <h1 className='text-3xl font-bold text-slate-900'>Alpha-gal Wallet & Dining Cards</h1>
-          <p className='text-lg text-slate-600'>Grab printable cards, get quarterly ingredient updates, and share safe-print partners with your care team.</p>
+          <h1 className='text-3xl font-bold text-slate-900'>Alpha-gal Cards & Medical Alert Tattoos</h1>
+          <p className='text-lg text-slate-600'>Printable cards for restaurants, medical alert tattoos for emergencies, and safe-print partners for your care team.</p>
         </header>
 
         <div className='card space-y-4'>
@@ -96,6 +106,24 @@ const CardsLandingPage: React.FC = () => {
             ))}
           </ul>
           <p className='text-xs text-slate-500'>Need custom messaging? Duplicate the PDF and edit in your preferred design tool or ask one of the print partners below.</p>
+        </div>
+
+        <div className='card space-y-4'>
+          <h2 className='text-xl font-semibold text-slate-800'>Why a medical alert tattoo?</h2>
+          <p className='text-sm text-slate-600'>In an emergency, you may not be able to speak. EMTs and ER staff check the inner wrist for medical alert bracelets and tattoos. An alpha-gal alert tattoo warns them to avoid mammal-derived medications that could trigger anaphylaxis:</p>
+          <ul className='text-sm text-slate-600 space-y-1 list-disc list-inside'>
+            <li><strong>Heparin</strong> — porcine-derived anticoagulant, standard in ER/surgery</li>
+            <li><strong>Gelatin IV solutions</strong> — plasma expanders used in trauma</li>
+            <li><strong>Bovine surgical products</strong> — hemostatic agents, surgical mesh</li>
+            <li><strong>Gelatin capsules</strong> — many emergency medications use gelatin shells</li>
+          </ul>
+          <div className='flex flex-col sm:flex-row gap-4 items-start'>
+            <img src='/downloads/ags_wrist_tattoo_simple.svg' alt='Alpha-gal wrist tattoo design preview' className='w-48 border rounded-md p-2 bg-white shadow-sm' />
+            <div className='space-y-2'>
+              <p className='text-sm text-slate-600'>The <strong>wrist design</strong> uses bold black ink only — optimized for temporary tattoo printing or as a template for permanent ink. The <strong>full design</strong> adds the Star of Life symbol and lone star tick icon for larger placements (upper arm, chest).</p>
+              <p className='text-sm text-slate-600'>Print temporary tattoos at home with inkjet tattoo paper, or order custom packs from print-on-demand services.</p>
+            </div>
+          </div>
         </div>
 
         <div className='card space-y-4'>

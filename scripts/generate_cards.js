@@ -178,52 +178,6 @@ function drawBandage(doc, cx, cy, size = 10, color = '#f59e0b') {
   for (let i = 0; i < 3; i++) doc.circle(cx - padW / 4 + i * (padW / 4), cy, 0.6).fill();
   doc.restore();
 }
-function drawCheck(doc, cx, cy, size = 8, color = '#16a34a') {
-  // Simple check mark
-  doc.save();
-  doc.lineWidth(1.8).strokeColor(color);
-  doc.moveTo(cx - size * 0.4, cy + size * 0.05)
-    .lineTo(cx - size * 0.1, cy + size * 0.35)
-    .lineTo(cx + size * 0.5, cy - size * 0.35)
-    .stroke();
-  doc.restore();
-}
-
-function drawLeaf(doc, cx, cy, size = 10, color = '#16a34a') {
-  // Stylized leaf using two bezier curves
-  const w = size, h = size * 0.7;
-  doc.save();
-  doc.fillColor(color);
-  doc.moveTo(cx, cy - h / 2)
-    .bezierCurveTo(cx + w / 2, cy - h / 2, cx + w / 2, cy + h / 2, cx, cy + h / 2)
-    .bezierCurveTo(cx - w / 2, cy + h / 2, cx - w / 2, cy - h / 2, cx, cy - h / 2)
-    .fill();
-  // Mid vein
-  doc.lineWidth(0.8).strokeColor('#0f5132');
-  doc.moveTo(cx, cy - h / 2 + 1).lineTo(cx, cy + h / 2 - 1).stroke();
-  doc.restore();
-}
-
-function drawCowHead(doc, cx, cy, size = 10, color = '#4b5563') {
-  // Minimal cow head
-  const r = size / 2;
-  doc.save();
-  doc.lineWidth(1).strokeColor(color);
-  // Face
-  doc.circle(cx, cy, r * 0.85).stroke();
-  // Ears
-  doc.moveTo(cx - r * 0.9, cy - r * 0.1).lineTo(cx - r * 1.2, cy - r * 0.6).lineTo(cx - r * 0.5, cy - r * 0.6).lineTo(cx - r * 0.9, cy - r * 0.1).stroke();
-  doc.moveTo(cx + r * 0.9, cy - r * 0.1).lineTo(cx + r * 1.2, cy - r * 0.6).lineTo(cx + r * 0.5, cy - r * 0.6).lineTo(cx + r * 0.9, cy - r * 0.1).stroke();
-  // Snout
-  doc.ellipse(cx, cy + r * 0.35, r * 0.55, r * 0.32).stroke();
-  // Eyes + nostrils
-  doc.circle(cx - r * 0.28, cy - r * 0.05, 0.7).fill(color);
-  doc.circle(cx + r * 0.28, cy - r * 0.05, 0.7).fill(color);
-  doc.circle(cx - r * 0.18, cy + r * 0.35, 0.7).fill(color);
-  doc.circle(cx + r * 0.18, cy + r * 0.35, 0.7).fill(color);
-  doc.restore();
-}
-
 function drawFish(doc, cx, cy, size = 12, color = '#0f766e') {
   // Simple fish: oval body + triangle tail + eye
   const bodyW = size, bodyH = size * 0.55;
