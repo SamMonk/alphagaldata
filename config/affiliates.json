@@ -18,6 +18,42 @@
       "url": "https://www.zazzle.com/api/wallet_cards?rf=alphagal",
       "description": "Budget-friendly reprints with gloss and matte options."
     },
+    "stickermule": {
+      "programId": "stickermule-alpha",
+      "category": "tattoo",
+      "url": "https://www.stickermule.com/products/temporary-tattoos",
+      "description": "Custom temporary tattoos with 10% affiliate commission. US, Canada, Mexico."
+    },
+    "stickeryou": {
+      "programId": "stickeryou-alpha",
+      "category": "tattoo",
+      "url": "https://www.stickeryou.com/products/custom-temporary-tattoos/714",
+      "description": "Flexible small-run temporary tattoos. 10% commission, 30-day cookie."
+    },
+    "easytatt": {
+      "programId": "easytatt-alpha",
+      "category": "tattoo",
+      "url": "https://easytatt.com/collections/personal-custom",
+      "description": "Long-lasting custom tattoos (3-7 days). 15% artist revenue share. Free image touch-ups."
+    },
+    "inkbox": {
+      "programId": "inkbox-alpha",
+      "category": "tattoo",
+      "url": "https://inkbox.com/pages/partnerships",
+      "description": "Semi-permanent tattoos lasting 2+ weeks. All-natural vegan ink."
+    },
+    "printify": {
+      "programId": "printify-alpha",
+      "category": "tattoo",
+      "url": "https://printify.com/app/products/2036/generic-brand/temporary-tattoos",
+      "description": "Print-on-demand temporary tattoos. Integrates with Etsy and Shopify. 5% affiliate."
+    },
+    "roadid": {
+      "programId": "roadid-alpha",
+      "category": "medical_alert",
+      "url": "https://roadid.refersion.com/affiliate/registration",
+      "description": "Engraved medical alert wristbands and tags for active lifestyles."
+    },
     "everlywell": {
       "programId": "everlywell-test",
       "category": "testing",
@@ -46,6 +82,8 @@
   "placements": {
     "wallet_cards": ["vistaprint", "moo", "zazzle"],
     "dining_cards": ["vistaprint", "moo", "zazzle"],
+    "tattoos": ["stickermule", "stickeryou", "easytatt", "inkbox", "printify"],
+    "medical_alert": ["roadid"],
     "testing": ["everlywell", "letstalkdx"],
     "marketplaces": ["shopagfriendly", "etsy"]
   }
