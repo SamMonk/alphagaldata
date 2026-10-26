@@ -7,7 +7,7 @@ a few weeks ahead of the season. Add your own lived-experience notes under a top
 (indented) and the agent will use them as the family-perspective angle. It will not
 invent any.
 
-- [ ] Thanksgiving and holiday meals with alpha-gal: hosting, being a guest, and what to bring (seasonal: publish by mid-November)
+- [d] Thanksgiving and holiday meals with alpha-gal: hosting, being a guest, and what to bring (seasonal: publish by mid-November) — drafts/article-thanksgiving-and-holiday-meals-with-alpha-gal.mdx
 - [ ] Medications, vaccines, and medical products that can contain mammalian ingredients (gelatin capsules, heparin, some vaccines, cetuximab, tissue/heart valves): what to ask your pharmacist and care team
 - [ ] Alpha-gal and dairy: why some people tolerate milk and others do not
 - [ ] Eating out with alpha-gal: a restaurant playbook (shared fryers, broths, lard, butter, flat-top grills, what to ask staff)
