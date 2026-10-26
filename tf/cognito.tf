@@ -88,10 +88,14 @@ resource "aws_cognito_user_pool_client" "web" {
   callback_urls = [
     "https://alphagaldata.com/auth",
     "http://localhost:8000/auth",
+    "http://localhost:8001/auth",
+    "http://localhost:8002/auth",
   ]
   logout_urls = [
     "https://alphagaldata.com",
     "http://localhost:8000",
+    "http://localhost:8001",
+    "http://localhost:8002",
   ]
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_scopes                 = ["email", "openid", "phone"]

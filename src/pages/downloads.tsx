@@ -1,6 +1,13 @@
 import React from 'react';
 import Layout from '../components/Layout';
 import affiliateConfig from '../../config/affiliates.json';
+import TrustNotice from '../components/TrustNotice';
+import {
+  applyResourceOverrides,
+  DEFAULT_DOWNLOAD_ASSETS,
+  getEditorialConfig,
+} from '../services/editorial/config';
+import type { PublicDownloadAsset } from '../contracts/editorial';
 
 type Program = { programId: string; category: string; url: string; description?: string };
 const programs = affiliateConfig.programs as Record<string, Program>;
@@ -9,59 +16,14 @@ const placements = affiliateConfig.placements as Record<string, string[]>;
 const resolve = (ids: string[]) =>
   ids.map((id) => ({ id, ...programs[id] })).filter((p) => p?.url);
 
-const printPartners = resolve(placements.wallet_cards ?? []);
+const printPartners = resolve([
+  ...(placements.wallet_cards ?? []),
+  ...(placements.dining_cards ?? []),
+]);
 const tattooPartners = resolve(placements.tattoos ?? []);
 const medicalAlertPartners = resolve(placements.medical_alert ?? []);
 const testingPartners = resolve(placements.testing ?? []);
 const marketplacePartners = resolve(placements.marketplaces ?? []);
-
-const assets = [
-  {
-    label: 'Wallet Card',
-    file: '/downloads/ags_wallet_card_v1.pdf',
-    format: 'PDF',
-    size: '3.375 x 2.125 in',
-    description: 'Credit-card size. Lists mammalian allergens and safe alternatives.',
-    preview: '/downloads/ags_wallet_card_v1.pdf',
-    category: 'card',
-  },
-  {
-    label: 'Dining Card',
-    file: '/downloads/ags_dining_card_v1.pdf',
-    format: 'PDF',
-    size: '6 x 4 in (landscape)',
-    description: 'Hand to restaurant staff. Covers meats, dairy, broths, cross-contact.',
-    preview: '/downloads/ags_dining_card_v1.pdf',
-    category: 'card',
-  },
-  {
-    label: 'Medical Alert Tattoo',
-    file: '/downloads/ags_medical_alert_tattoo.svg',
-    format: 'SVG',
-    size: '3.5 x 1.5 in',
-    description: 'Full design with Star of Life, lone star tick, and medication warnings. For upper arm or chest.',
-    preview: '/downloads/ags_medical_alert_tattoo.svg',
-    category: 'tattoo',
-  },
-  {
-    label: 'Wrist Tattoo',
-    file: '/downloads/ags_wrist_tattoo_simple.svg',
-    format: 'SVG',
-    size: '2.5 x 1 in',
-    description: 'Bold black-ink design for inner wrist. Optimized for temporary tattoo printing or permanent ink.',
-    preview: '/downloads/ags_wrist_tattoo_simple.svg',
-    category: 'tattoo',
-  },
-  {
-    label: 'Lone Star Tick Icon',
-    file: '/favicon.svg',
-    format: 'SVG',
-    size: '64 x 64 px',
-    description: 'Brand icon — lone star tick with white dorsal marking. Use for stickers, merch, or awareness materials.',
-    preview: '/favicon.svg',
-    category: 'brand',
-  },
-];
 
 function WatermarkPreview({ src, alt, isSvg }: { src: string; alt: string; isSvg: boolean }) {
   return (
@@ -115,22 +77,209 @@ function PartnerChips({ partners, verb }: { partners: ReturnType<typeof resolve>
 }
 
 export default function DownloadsPage() {
+  const [assets, setAssets] = React.useState<PublicDownloadAsset[]>(
+    DEFAULT_DOWNLOAD_ASSETS
+  );
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const loadEditorialConfig = async () => {
+      const response = await getEditorialConfig();
+      if (cancelled || response.error || !response.data) return;
+      setAssets(applyResourceOverrides(DEFAULT_DOWNLOAD_ASSETS, response.data));
+    };
+
+    void loadEditorialConfig();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const cards = assets.filter((a) => a.category === 'card');
   const tattoos = assets.filter((a) => a.category === 'tattoo');
   const brand = assets.filter((a) => a.category === 'brand');
+  const diningCard = cards.find((asset) => asset.label === 'Dining Card');
+  const walletCard = cards.find((asset) => asset.label === 'Wallet Card');
+  const otherCards = cards.filter((asset) => asset.label !== 'Dining Card');
 
   return (
     <Layout
       title="Downloads & Designs"
       description="Free alpha-gal wallet cards, dining cards, medical alert tattoo designs, and brand assets. Print at home or order from our partners."
+      noindex
     >
       <section className="max-w-4xl mx-auto space-y-12">
-        <header className="text-center space-y-3">
+        <header className="space-y-3 text-center">
           <h1 className="text-3xl font-bold text-slate-900">Downloads & Designs</h1>
-          <p className="text-lg text-slate-600">
+          <p className="mx-auto max-w-3xl text-lg leading-8 text-slate-600">
             Free resources to communicate your alpha-gal allergy. Download, print, or order through our partners.
           </p>
         </header>
+
+        <TrustNotice title="Preparedness support" tone="amber">
+          These downloads are practical tools for meals, emergencies, and medical-alert communication. They are meant to
+          support safer conversations and preparedness, not to replace individualized clinician guidance or emergency protocols.
+        </TrustNotice>
+
+        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+          <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Emergency preparedness
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+                  Start with the tool you need to carry
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-slate-700">
+                  When the goal is emergency planning rather than meal support, start by choosing the right kind of alert:
+                  a wallet card for fuller detail, a bracelet or tattoo for fast visibility, and printable files you can stage in a bag, car, or shared family folder.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <a
+                  href="/learn/wallet-card-guide"
+                  className="rounded-xl border border-white/70 bg-white/90 p-4 text-sm text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                >
+                  <span className="block text-base font-semibold text-slate-900">
+                    Wallet card guide
+                  </span>
+                  <span className="mt-2 block">
+                    Best for intake, travel, and situations where staff or family need a quick written summary.
+                  </span>
+                </a>
+                <a
+                  href="/learn/medical-alert-tattoo"
+                  className="rounded-xl border border-white/70 bg-white/90 p-4 text-sm text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                >
+                  <span className="block text-base font-semibold text-slate-900">
+                    Medical alert guide
+                  </span>
+                  <span className="mt-2 block">
+                    Best for visible alerts when you may not be able to explain the restriction before treatment starts.
+                  </span>
+                </a>
+                <a
+                  href="/learn/printing-alpha-gal-cards"
+                  className="rounded-xl border border-white/70 bg-white/90 p-4 text-sm text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                >
+                  <span className="block text-base font-semibold text-slate-900">
+                    Printing guide
+                  </span>
+                  <span className="mt-2 block">
+                    Use once you know what to carry and want durable copies, extras, or home-print instructions.
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/70 bg-white/90 p-4 text-sm text-slate-700">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                Quick readiness checklist
+              </p>
+              <ul className="mt-3 list-disc space-y-2 pl-5">
+                <li>Carry one visible alert and one detailed backup.</li>
+                <li>Keep emergency contacts and medication notes current.</li>
+                <li>Store printable files where a family member can reprint them fast.</li>
+                <li>Use these resources to support conversations, not replace them.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {diningCard ? (
+          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
+            <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                    Primary dining resource
+                  </p>
+                  <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+                    Dining card preview and quick download
+                  </h2>
+                  <p className="mt-3 text-sm leading-7 text-slate-700">
+                    Use this card when you need a fast, clear way to explain alpha-gal restrictions to restaurant staff.
+                    It highlights the kitchen details that matter most, including mammalian ingredients, broths, dairy,
+                    and cross-contact concerns.
+                  </p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-xl border border-white/70 bg-white/85 p-4 text-sm text-slate-700">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Best for
+                    </p>
+                    <p className="mt-2">
+                      Restaurant visits, travel, catered events, and any meal where you need kitchen staff to see the restriction in writing.
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-white/70 bg-white/85 p-4 text-sm text-slate-700">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                      Before you print
+                    </p>
+                    <p className="mt-2">
+                      Add your personal notes, keep a phone photo as backup, and still confirm ingredients and preparation with staff.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href={diningCard.file}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn"
+                  >
+                    Open dining card PDF
+                  </a>
+                  <a
+                    href="/learn/dining-card-guide"
+                    className="btn"
+                  >
+                    Read dining card guide
+                  </a>
+                  <a
+                    href="/cards"
+                    className="btn"
+                  >
+                    Print and card shortcuts
+                  </a>
+                </div>
+
+                <p className="text-xs text-slate-600">
+                  Download path stays public and stable. The card helps communication, but it does not guarantee safety or replace direct kitchen confirmation.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-100 bg-white p-3 shadow-sm">
+                <iframe
+                  src={`${diningCard.preview}#view=FitH`}
+                  title="Dining card preview"
+                  className="h-[420px] w-full rounded-xl border border-slate-200"
+                />
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <a className="card-link p-4 text-sm" href="/recipes">
+            <h2 className="text-base font-semibold text-slate-900">Need food ideas too?</h2>
+            <p className="mt-2 text-slate-600">Go back into recipe discovery when you are done with practical tools.</p>
+          </a>
+          <a className="card-link p-4 text-sm" href="/testing">
+            <h2 className="text-base font-semibold text-slate-900">Testing and clinician next steps</h2>
+            <p className="mt-2 text-slate-600">Move from printable resources into testing context and care pathways.</p>
+          </a>
+          <a className="card-link p-4 text-sm" href="/caregivers">
+            <h2 className="text-base font-semibold text-slate-900">Share with caregivers</h2>
+            <p className="mt-2 text-slate-600">Point family members and helpers to one routed page that explains what supports daily life.</p>
+          </a>
+        </div>
 
         {/* Wallet & Dining Cards */}
         <div className="space-y-4">
@@ -138,28 +287,60 @@ export default function DownloadsPage() {
           <p className="text-sm text-slate-600">
             Carry these cards to explain your allergy at restaurants, pharmacies, and doctor visits.
           </p>
-          <div className="grid gap-6 md:grid-cols-2">
-            {cards.map((asset) => (
-              <div key={asset.file} className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
-                <WatermarkPreview src={asset.preview} alt={asset.label} isSvg={asset.format === 'SVG'} />
-                <div className="p-4 space-y-2">
-                  <h3 className="font-semibold text-slate-800">{asset.label}</h3>
-                  <p className="text-sm text-slate-600">{asset.description}</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{asset.format}</span>
-                    <span>{asset.size}</span>
-                  </div>
-                  <a
-                    href={asset.file}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn inline-block mt-2"
-                  >
-                    Download {asset.format}
-                  </a>
-                </div>
+          {walletCard ? (
+            <div className="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950">
+              <p className="font-semibold">Preparedness note: the wallet card is your detailed backup.</p>
+              <p className="mt-2">
+                Use it when you need more clinical detail than a bracelet or tattoo can provide, especially for intake, travel, and emergency-contact handoff.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a className="btn" href={walletCard.file} target="_blank" rel="noreferrer">
+                  Open wallet card PDF
+                </a>
+                <a className="btn" href="/learn/wallet-card-guide">
+                  Read wallet card guide
+                </a>
               </div>
-            ))}
+            </div>
+          ) : null}
+          {otherCards.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2">
+              {otherCards.map((asset) => (
+                <div key={asset.file} className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+                  <WatermarkPreview src={asset.preview} alt={asset.label} isSvg={asset.format === 'SVG'} />
+                  <div className="p-4 space-y-2">
+                    <h3 className="font-semibold text-slate-800">{asset.label}</h3>
+                    <p className="text-sm text-slate-600">{asset.description}</p>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{asset.format}</span>
+                      <span>{asset.size}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <a
+                        href={asset.file}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn inline-block"
+                      >
+                        Open {asset.label.toLowerCase()} {asset.format}
+                      </a>
+                      <a
+                        href="/cards"
+                        className="btn inline-block"
+                      >
+                        More card options
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+            <p className="font-medium text-slate-900">Looking for the dining card?</p>
+            <p className="mt-2">
+              The dining card is featured above as the primary meal-support resource so visitors do not have to hunt for it among broader downloads.
+            </p>
           </div>
           <div className="space-y-2">
             <p className="text-sm font-medium text-slate-700">Print with a partner:</p>
@@ -180,7 +361,7 @@ export default function DownloadsPage() {
                 <div className="p-4 space-y-2">
                   <h3 className="font-semibold text-slate-800">{asset.label}</h3>
                   <p className="text-sm text-slate-600">{asset.description}</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
                     <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{asset.format}</span>
                     <span>{asset.size}</span>
                   </div>
@@ -218,7 +399,7 @@ export default function DownloadsPage() {
                 <div className="p-4 space-y-2">
                   <h3 className="font-semibold text-slate-800">{asset.label}</h3>
                   <p className="text-sm text-slate-600">{asset.description}</p>
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
                     <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono">{asset.format}</span>
                     <span>{asset.size}</span>
                   </div>

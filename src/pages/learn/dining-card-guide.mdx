@@ -4,11 +4,16 @@ description: Explain your alpha-gal needs quickly when ordering food.
 ---
 
 import TopicLayout from "../../components/TopicLayout";
+import TrustNotice from "../../components/TrustNotice";
 import { IconInfo } from "../../components/icons";
 
 export const Head = () => <title>Dining Card Guide • AlphaGalData</title>;
 
 <TopicLayout title="Dining Card Guide" description="Explain your alpha-gal needs quickly when ordering food.">
+
+<TrustNotice title="Dining communication support" tone="amber">
+This guide helps you use the dining card as a practical restaurant tool. It supports safer conversations with staff, but it does not replace direct ingredient and preparation checks.
+</TrustNotice>
 
 Handing a ready-made dining card to restaurant staff keeps the conversation focused on ingredients that matter. The printable card below gives cooks and servers a clear checklist so meals stay free of mammalian products.
 
@@ -30,6 +35,12 @@ Handing a ready-made dining card to restaurant staff keeps the conversation focu
 - Pack extra cards in your bag or car so friends can advocate for you if you become symptomatic.
 
 <div className="not-prose my-6">
+  <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
+    <p className="font-semibold">Use this page as the quick dining-card guide.</p>
+    <p className="mt-2">
+      If you want the broader printable resource library, partner print options, wallet cards, or tattoo assets, use the full <a className="underline" href="/downloads">downloads page</a>.
+    </p>
+  </div>
   <div className="rounded-xl border border-slate-200 shadow-sm overflow-hidden">
     <iframe
       src="/downloads/ags_dining_card_v1.pdf#view=FitH"
@@ -39,10 +50,23 @@ Handing a ready-made dining card to restaurant staff keeps the conversation focu
   </div>
   <div className="flex flex-wrap gap-2 mt-3">
     <a className="btn" href="/downloads/ags_dining_card_v1.pdf" target="_blank" rel="noreferrer">Open dining card PDF</a>
-    <a className="btn" href="/downloads">See more print options</a>
+    <a className="btn" href="/downloads">Open full download library</a>
+    <a className="btn" href="/cards">Print and card shortcuts</a>
   </div>
   <p className="text-xs text-slate-500 mt-2">Print on 4x6 inch paper in landscape orientation. Laminate or store in a protective sleeve so it survives kitchen use.</p>
 </div>
+
+## What the card helps staff catch
+
+- Hidden mammalian ingredients in sauces, broths, butter, dairy, or cooking fats.
+- Shared preparation issues such as grills, fryers, pans, and utensils.
+- The fact that the restriction needs to follow the whole preparation path, not just the main protein.
+
+## Where to go next
+
+- Use the <a href="/downloads">downloads page</a> for the full printable library and related resources.
+- Return to <a href="/scanner">the scanner</a> if you are still evaluating a packaged ingredient list before dining out.
+- Browse <a href="/recipes">recipes</a> when the safest move is cooking at home instead of forcing a risky restaurant choice.
 
 <div className="not-prose mt-6">
   <div className="rounded-xl border border-slate-200 bg-slate-100 p-4 text-sm text-slate-800 flex gap-2">

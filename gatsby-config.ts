@@ -8,7 +8,23 @@ const plugins: any[] = [
     resolve: `gatsby-plugin-sitemap`,
     options: {
       createLinkInHead: true,
-      excludes: [`/auth`, `/auth/`, `/submit-recipe`, `/submit-recipe/`, `/offline-plugin-app-shell-fallback`, `/offline-plugin-app-shell-fallback/`],
+      // Keep the sitemap in sync with noindex pages: never advertise a URL that
+      // emits `noindex` (thin/functional/personal/form/admin pages). This prevents
+      // the "Submitted URL marked noindex" contradiction in Search Console.
+      excludes: [
+        `/auth`, `/auth/`,
+        `/submit-recipe`, `/submit-recipe/`,
+        `/scanner`, `/scanner/`,
+        `/heat-map`, `/heat-map/`,
+        `/saved-recipes`, `/saved-recipes/`,
+        `/recommended`, `/recommended/`,
+        `/caregivers`, `/caregivers/`,
+        `/downloads`, `/downloads/`,
+        `/cards`, `/cards/`,
+        `/editorial`, `/editorial/`,
+        `/moderation`, `/moderation/`,
+        `/offline-plugin-app-shell-fallback`, `/offline-plugin-app-shell-fallback/`,
+      ],
     },
   },
   { resolve: `gatsby-plugin-robots-txt`, options: { policy: [{ userAgent: `*`, allow: `/` }] } },
@@ -39,6 +55,7 @@ const plugins: any[] = [
       // Align S3 object Cache-Control with our deploy script
       params: {
         "**/*.html": { CacheControl: "public, max-age=0, must-revalidate" },
+        "ads.txt": { CacheControl: "public, max-age=86400", ContentType: "text/plain; charset=utf-8" },
         "**/*.{js,css,svg,png,jpg,jpeg,webp,avif,woff,woff2,ttf,eot}": { CacheControl: "public, max-age=31536000, immutable" },
         "static/**": { CacheControl: "public, max-age=31536000, immutable" }
       }

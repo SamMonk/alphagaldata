@@ -26,11 +26,24 @@ collections:
       - { label: "Prep Time", name: "prep_time", widget: "string", required: false }
       - { label: "Cook Time", name: "cook_time", widget: "string", required: false }
       - { label: "Featured Image", name: "image", widget: "image", required: false, hint: "Upload a photo of the finished dish." }
+      - { label: "Feature on public discovery surfaces", name: "featured", widget: "boolean", required: false, default: false, hint: "Mark true to surface this recipe in homepage and featured sections. Only already-published recipes should be featured." }
+      - { label: "Featured order", name: "featured_order", widget: "number", required: false, value_type: "int", min: 1, hint: "Lower numbers surface first. Leave blank if not featured." }
       - label: "Safety Notes"
         name: "safety_notes"
         widget: "list"
         required: false
         hint: "Label-reading tips and substitution warnings for alpha-gal safety. Be specific — e.g. 'Check broth label for carrageenan'."
+      - { label: "Safety Summary", name: "safety_summary", widget: "text", required: false, hint: "Short trust-first summary explaining why this recipe may work for alpha-gal households." }
+      - label: "Substitutions"
+        name: "substitutions"
+        widget: "list"
+        required: false
+        hint: "Safe swaps that keep the dish aligned with the recipe's safety framing."
+      - label: "Caution Points"
+        name: "caution_points"
+        widget: "list"
+        required: false
+        hint: "Important verify-before-you-cook warnings that belong near the recipe decision moment."
       - { label: "Ingredients", name: "ingredients", widget: "list", hint: "One ingredient per line, with quantity." }
       - { label: "Steps", name: "steps", widget: "list", hint: "One instruction step per line." }
       - { label: "Body (optional extra notes)", name: "body", widget: "markdown", required: false }

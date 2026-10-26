@@ -1,149 +1,186 @@
 import React from 'react';
+import type { DecodeHintType, Result } from '@zxing/library';
+import PreparednessResourcePanel from '../components/PreparednessResourcePanel';
+import ScannerClassificationList from '../components/scanner/ScannerClassificationList';
+import ScannerEducationGuidance from '../components/scanner/ScannerEducationGuidance';
+import ScannerResultSummaryCard from '../components/scanner/ScannerResultSummaryCard';
 import Layout from '../components/Layout';
+import TrustNotice from '../components/TrustNotice';
+import type {
+  ScannerClassification,
+  ScannerClassificationSummary,
+  ScannerRiskTier,
+} from '../contracts/scanner';
+import {
+  classifyIngredients,
+  getScannerWatchlistCount,
+} from '../services/scanner/classify';
 
-type ZXingReader = any;
+type ZXingReader = unknown;
 
-type Tier = 'avoid' | 'high' | 'check';
-
-type Match = { key: string; label: string; regex: RegExp; tier: Tier; ref?: string };
-
-const TIER_META: Record<Tier, { color: string; bg: string; border: string; text: string }> = {
-  avoid:  { color: 'text-red-800',    bg: 'bg-red-100',    border: 'border-red-300',    text: 'bg-red-200' },
-  high:   { color: 'text-orange-800', bg: 'bg-orange-100', border: 'border-orange-300', text: 'bg-orange-200' },
-  check:  { color: 'text-amber-800',  bg: 'bg-amber-100',  border: 'border-amber-300',  text: 'bg-amber-200' },
+type ScannerProduct = {
+  product_name?: string;
+  brands?: string;
+  brand_owner?: string;
+  code?: string;
+  image_small_url?: string;
+  ingredients_text?: string;
+  ingredients_text_en?: string;
+  ingredients?: Array<{ text?: string }>;
 };
 
-const WATCHLIST: Match[] = [
-  // === AVOID: contains alpha-gal directly ===
-  { key: 'beef',        label: 'Beef / Bovine',         regex: /\b(beef|bovine|ox|cow)\b/i,             tier: 'avoid' },
-  { key: 'pork',        label: 'Pork / Porcine',        regex: /\b(pork|porcine|swine|ham|bacon)\b/i,   tier: 'avoid' },
-  { key: 'lamb',        label: 'Lamb / Mutton',         regex: /\b(lamb|mutton)\b/i,                    tier: 'avoid' },
-  { key: 'venison',     label: 'Venison / Deer',        regex: /\b(venison|deer)\b/i,                   tier: 'avoid' },
-  { key: 'bison',       label: 'Bison / Buffalo',       regex: /\b(bison|buffalo)\b/i,                  tier: 'avoid' },
-  { key: 'goat',        label: 'Goat',                  regex: /\bgoat\b/i,                             tier: 'avoid' },
-  { key: 'veal',        label: 'Veal',                  regex: /\bveal\b/i,                             tier: 'avoid' },
-  { key: 'rabbit',      label: 'Rabbit',                regex: /\brabbit\b/i,                           tier: 'avoid' },
-  { key: 'game-meat',   label: 'Game Meat',             regex: /\bgame\s+meat\b/i,                      tier: 'avoid' },
-  { key: 'organ-meat',  label: 'Organ Meat',            regex: /\borgan\s+meat\b/i,                     tier: 'avoid' },
+const TIER_META: Record<
+  ScannerRiskTier,
+  { color: string; bg: string; border: string; text: string }
+> = {
+  known_risk: {
+    color: 'text-red-800',
+    bg: 'bg-red-100',
+    border: 'border-red-300',
+    text: 'bg-red-200',
+  },
+  caution: {
+    color: 'text-amber-800',
+    bg: 'bg-amber-100',
+    border: 'border-amber-300',
+    text: 'bg-amber-200',
+  },
+  unknown: {
+    color: 'text-blue-800',
+    bg: 'bg-blue-100',
+    border: 'border-blue-300',
+    text: 'bg-blue-200',
+  },
+};
 
-  // === HIGH: mammalian derivative, likely reactive ===
-  { key: 'gelatin',     label: 'Gelatin / Gelatine',    regex: /\bgelatin(e)?\b/i,                      tier: 'high', ref: 'https://www.cdc.gov/ticks/alpha-gal/consumers.html' },
-  { key: 'collagen',    label: 'Collagen',              regex: /\bcollagen\b/i,                         tier: 'high' },
-  { key: 'lard',        label: 'Lard',                  regex: /\blard\b/i,                             tier: 'high', ref: 'https://www.cdc.gov/ticks/alpha-gal/consumers.html' },
-  { key: 'tallow',      label: 'Tallow / Suet',         regex: /\b(tallow|suet)\b/i,                    tier: 'high', ref: 'https://www.cdc.gov/ticks/alpha-gal/consumers.html' },
-  { key: 'dripping',    label: 'Dripping',              regex: /\bdripping\b/i,                         tier: 'high' },
-  { key: 'bone-broth',  label: 'Bone Broth / Stock',    regex: /\bbone\s+(broth|stock|meal)\b/i,        tier: 'high' },
-  { key: 'broth',       label: 'Broth / Bouillon',      regex: /\b(broth|bouillon)\b/i,                 tier: 'high' },
-  { key: 'meat-extract',label: 'Meat Extract / Stock',   regex: /\bmeat\s+(extract|stock)\b/i,           tier: 'high' },
-  { key: 'rennet',      label: 'Rennet',                regex: /\brennet\b/i,                           tier: 'high' },
-  { key: 'pepsin',      label: 'Pepsin',                regex: /\bpepsin\b/i,                           tier: 'high' },
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-  // === CHECK: may be plant or mammal sourced — verify ===
-  { key: 'glycerin',    label: 'Glycerin / Glycerol',   regex: /\bglycer(ol|in|ine)\b/i,                tier: 'check' },
-  { key: 'stearate',    label: 'Stearate / Stearic acid',regex: /\b(stearate|magnesium\s+stearate|stearic\s+acid)\b/i, tier: 'check' },
-  { key: 'lanolin',     label: 'Lanolin',               regex: /\blanolin\b/i,                          tier: 'check' },
-  { key: 'natural-flavors', label: 'Natural Flavors',   regex: /\bnatural\s+flavou?rs?\b/i,             tier: 'check' },
-  { key: 'mono-di',     label: 'Mono & Diglycerides',   regex: /\b(mono\s*(and|&)?\s*diglycerides|monoglycerides|diglycerides)\b/i, tier: 'check' },
-  { key: 'carmine',     label: 'Carmine / Cochineal',   regex: /\b(carmine|cochineal)\b/i,              tier: 'check' },
-  { key: 'vitamin-d3',  label: 'Vitamin D3',            regex: /\bvitamin\s*d3\b/i,                     tier: 'check' },
-  { key: 'whey',        label: 'Whey',                  regex: /\bwhey\b/i,                             tier: 'check' },
-  { key: 'casein',      label: 'Casein / Caseinate',    regex: /\bcasein(ate)?\b/i,                     tier: 'check' },
-  { key: 'lactose',     label: 'Lactose',               regex: /\blactose\b/i,                          tier: 'check' },
-  { key: 'milk',        label: 'Milk / Cream / Butter', regex: /\b(milk|cream|butter)\b/i,              tier: 'check' },
-  { key: 'cheese',      label: 'Cheese',                regex: /\bcheese\b/i,                           tier: 'check' },
-];
+function highlight(text: string, matches: ScannerClassification[]) {
+  if (!text || matches.length === 0) return <span>{text}</span>;
 
-function highlight(text: string, matches: Match[]) {
-  if (!text) return null;
-  let parts: React.ReactNode[] = [text];
-  matches.forEach((m, idx) => {
-    const style = TIER_META[m.tier];
+  let rendered: React.ReactNode[] = [text];
+
+  matches.forEach((match, matchIndex) => {
+    const style = TIER_META[match.risk_tier];
+    const pattern = new RegExp(`(${escapeRegExp(match.matched_text)})`, 'gi');
     const next: React.ReactNode[] = [];
-    parts.forEach((p, i) => {
-      if (typeof p !== 'string') { next.push(p); return; }
-      const pieces = p.split(m.regex);
-      for (let j = 0; j < pieces.length; j++) {
-        next.push(pieces[j]);
-        if (j < pieces.length - 1) {
-          next.push(<mark key={`${idx}-${i}-${j}`} className={`${style.text} px-0.5 rounded`}>{p.match(m.regex)?.[0] || ''}</mark>);
-        }
+
+    rendered.forEach((part, partIndex) => {
+      if (typeof part !== 'string') {
+        next.push(part);
+        return;
       }
+
+      const pieces = part.split(pattern);
+      pieces.forEach((piece, pieceIndex) => {
+        if (!piece) return;
+        if (piece.toLowerCase() === match.matched_text.toLowerCase()) {
+          next.push(
+            <mark
+              key={`${matchIndex}-${partIndex}-${pieceIndex}`}
+              className={`${style.text} rounded px-0.5`}
+            >
+              {piece}
+            </mark>
+          );
+          return;
+        }
+        next.push(piece);
+      });
     });
-    parts = next;
+
+    rendered = next;
   });
-  return <span>{parts}</span>;
+
+  return <span>{rendered}</span>;
 }
 
-function getVerdict(matched: Match[]): { tier: Tier | 'clean'; message: string } {
-  if (matched.some(m => m.tier === 'avoid')) return { tier: 'avoid', message: 'Alpha-gal triggers found' };
-  if (matched.some(m => m.tier === 'high'))  return { tier: 'high', message: 'Mammalian derivatives detected — verify source' };
-  if (matched.some(m => m.tier === 'check')) return { tier: 'check', message: 'Ingredients need source verification' };
-  return { tier: 'clean', message: 'No known alpha-gal triggers detected' };
-}
-
-function VerdictBanner({ matched, ingredientCount }: { matched: Match[]; ingredientCount: number }) {
-  const verdict = getVerdict(matched);
-
-  if (verdict.tier === 'clean') {
-    return (
-      <div className="p-3 rounded border border-green-300 bg-green-50 text-green-800">
-        <div className="font-semibold">{verdict.message}</div>
-        <div className="text-xs mt-1">
-          Scanned {ingredientCount} ingredient{ingredientCount !== 1 ? 's' : ''} against {WATCHLIST.length} watchlist entries.
-          This scan checks for common mammalian-derived ingredients. It cannot detect all possible sources of alpha-gal.
-          Always verify with manufacturers and your healthcare provider.
-        </div>
-      </div>
-    );
+function fallbackSummaryFromMatches(
+  matches: ScannerClassification[]
+): ScannerClassificationSummary {
+  if (matches.some((item) => item.risk_tier === 'known_risk')) {
+    return {
+      risk_tier: 'known_risk',
+      next_action: 'avoid',
+      message: 'Known risk ingredients found.',
+    };
   }
 
-  const style = TIER_META[verdict.tier as Tier];
-  return (
-    <div className={`p-3 rounded border ${style.border} ${style.bg} ${style.color}`}>
-      <div className="font-semibold">{verdict.message}</div>
-      <div className="text-xs mt-1">{matched.length} match{matched.length !== 1 ? 'es' : ''} found in {ingredientCount} ingredient{ingredientCount !== 1 ? 's' : ''}</div>
-    </div>
-  );
+  if (matches.some((item) => item.risk_tier === 'caution')) {
+    return {
+      risk_tier: 'caution',
+      next_action: 'verify_before_using',
+      message: 'Caution: verify ingredient sources before using.',
+    };
+  }
+
+  return {
+    risk_tier: 'unknown',
+    next_action: 'research_before_buying',
+    message:
+      'No watchlist matches were found. Continue reviewing the label and research unclear ingredients before buying.',
+  };
 }
 
-function MatchList({ matched }: { matched: Match[] }) {
-  const grouped: Record<Tier, Match[]> = { avoid: [], high: [], check: [] };
-  matched.forEach(m => grouped[m.tier].push(m));
-  const tierLabels: Record<Tier, string> = { avoid: 'Avoid — contains alpha-gal', high: 'High risk — mammalian derivative', check: 'Check source — may be plant-derived' };
-
-  return (
-    <div className="space-y-2">
-      {(['avoid', 'high', 'check'] as Tier[]).map(tier => {
-        if (grouped[tier].length === 0) return null;
-        const style = TIER_META[tier];
-        return (
-          <div key={tier}>
-            <div className={`text-xs font-semibold ${style.color} mb-0.5`}>{tierLabels[tier]}</div>
-            <ul className="text-sm list-disc pl-5">
-              {grouped[tier].map(m => (
-                <li key={m.key}>
-                  <span className={`font-medium ${style.color}`}>{m.label}</span>
-                  {m.ref ? (
-                    <> · <a href={m.ref} target="_blank" rel="noreferrer" className="underline text-xs">source</a></>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      })}
-    </div>
-  );
+function estimateIngredientCount(text: string): number {
+  return text.split(/[,;]/).filter((segment) => segment.trim()).length;
 }
 
-export default function ScannerPage(){
+function hasUsableProductIngredients(text: string): boolean {
+  const normalized = text.trim().toLowerCase();
+  if (!normalized) return false;
+
+  const stripped = normalized.replace(/[^a-z,\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!stripped) return false;
+
+  const placeholderPatterns = [
+    /^test(?:,\s*test)*$/,
+    /^sample(?:,\s*sample)*$/,
+    /^ingredients?$/,
+    /^n\/a$/,
+    /^unknown$/,
+  ];
+
+  if (placeholderPatterns.some((pattern) => pattern.test(stripped))) {
+    return false;
+  }
+
+  const tokens = stripped
+    .split(/[, ]+/)
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  if (tokens.length === 0) return false;
+
+  const uniqueTokens = new Set(tokens);
+  if (tokens.length >= 2 && uniqueTokens.size === 1) {
+    return false;
+  }
+
+  if (uniqueTokens.size < 2 && stripped.length < 20) {
+    return false;
+  }
+
+  return true;
+}
+
+export default function ScannerPage() {
   const [code, setCode] = React.useState<string>('');
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [product, setProduct] = React.useState<any>(null);
+  const [barcodeLoading, setBarcodeLoading] = React.useState<boolean>(false);
+  const [lookupError, setLookupError] = React.useState<string | null>(null);
+  const [pasteError, setPasteError] = React.useState<string | null>(null);
+  const [product, setProduct] = React.useState<ScannerProduct | null>(null);
   const [active, setActive] = React.useState<boolean>(false);
   const [pasteText, setPasteText] = React.useState<string>('');
   const [pasteResult, setPasteResult] = React.useState<string | null>(null);
+  const [pasteMatches, setPasteMatches] = React.useState<
+    ScannerClassification[]
+  >([]);
+  const [pasteSummary, setPasteSummary] =
+    React.useState<ScannerClassificationSummary | null>(null);
+  const [pasteSubmitting, setPasteSubmitting] = React.useState<boolean>(false);
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
   const [ocrStatus, setOcrStatus] = React.useState<string | null>(null);
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
@@ -153,233 +190,270 @@ export default function ScannerPage(){
 
   const startScanner = async () => {
     if (typeof window === 'undefined') return;
+
     try {
-      setError(null);
+      setLookupError(null);
       setCapturedImage(null);
+
       const ZX = await import('@zxing/browser');
       const codeReader = new ZX.BrowserMultiFormatReader();
-      readerRef.current = codeReader;
+      readerRef.current = codeReader as ZXingReader;
       setActive(true);
-      await codeReader.decodeFromVideoDevice(undefined, videoRef.current!, (result: any, err: any) => {
-        if (result?.getText) {
-          const txt = result.getText();
-          if (/^\d{8,14}$/.test(txt)) {
-            setCode(txt);
-            lookup(txt);
-            stopScanner();
-          }
+
+      await codeReader.decodeFromVideoDevice(
+        undefined,
+        videoRef.current!,
+        (result: Result | undefined, _err: unknown) => {
+          if (!result?.getText) return;
+          const text = result.getText();
+          if (!/^\d{8,14}$/.test(text)) return;
+
+          setCode(text);
+          void lookup(text);
+          void stopScanner();
         }
-      });
-    } catch (e: any) {
-      setError(e?.message || 'Unable to start camera');
+      );
+    } catch (error: unknown) {
+      setLookupError(
+        error instanceof Error ? error.message : 'Unable to start camera'
+      );
     }
   };
 
   const stopScanner = async () => {
     try {
       setActive(false);
-      await readerRef.current?.reset();
+      const resettableReader = readerRef.current as { reset?: () => Promise<void> } | null;
+      await resettableReader?.reset?.();
       const stream = videoRef.current?.srcObject as MediaStream | null;
-      stream?.getTracks().forEach(t => t.stop());
+      stream?.getTracks().forEach((track) => track.stop());
       if (videoRef.current) videoRef.current.srcObject = null;
-    } catch {}
+    } catch {
+      // Ignore cleanup failures while stopping the camera.
+    }
   };
 
   const captureFrame = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
+
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.drawImage(video, 0, 0);
-    const dataUrl = canvas.toDataURL('image/png');
-    setCapturedImage(dataUrl);
-    stopScanner();
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.drawImage(video, 0, 0);
+    setCapturedImage(canvas.toDataURL('image/png'));
+    void stopScanner();
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = () => {
       setCapturedImage(reader.result as string);
-      setError(null);
+      setLookupError(null);
     };
     reader.readAsDataURL(file);
-    // Reset file input so the same file can be re-selected
-    e.target.value = '';
+    event.target.value = '';
   };
 
   const decodeBarcode = async () => {
     if (!capturedImage) return;
-    setError(null);
-    setLoading(true);
+
+    setLookupError(null);
+    setBarcodeLoading(true);
+
     try {
       const ZX = await import('@zxing/browser');
       const ZXLib = await import('@zxing/library');
 
-      // Load the image
-      const img = new Image();
-      img.src = capturedImage;
+      const image = new Image();
+      image.src = capturedImage;
       await new Promise<void>((resolve, reject) => {
-        img.onload = () => resolve();
-        img.onerror = () => reject(new Error('Failed to load image'));
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error('Failed to load image'));
       });
 
-      // Try decoding with multiple strategies
-      const hints = new Map<any, any>();
+      const hints = new Map<DecodeHintType, unknown>();
       hints.set(ZXLib.DecodeHintType.TRY_HARDER, true);
 
-      // Attempt 1: full image
-      // Attempt 2: grayscale + contrast-enhanced
-      // Attempt 3: center-cropped (50% region)
-      // Attempt 4: horizontal strip (middle 30% height, for close-up barcode photos)
       const canvases: HTMLCanvasElement[] = [];
 
-      // Full image
-      const c1 = document.createElement('canvas');
-      c1.width = img.width; c1.height = img.height;
-      c1.getContext('2d')!.drawImage(img, 0, 0);
-      canvases.push(c1);
+      const fullCanvas = document.createElement('canvas');
+      fullCanvas.width = image.width;
+      fullCanvas.height = image.height;
+      fullCanvas.getContext('2d')!.drawImage(image, 0, 0);
+      canvases.push(fullCanvas);
 
-      // Grayscale + contrast boost
-      const c2 = document.createElement('canvas');
-      c2.width = img.width; c2.height = img.height;
-      const ctx2 = c2.getContext('2d')!;
-      ctx2.filter = 'grayscale(1) contrast(2)';
-      ctx2.drawImage(img, 0, 0);
-      canvases.push(c2);
+      const grayscaleCanvas = document.createElement('canvas');
+      grayscaleCanvas.width = image.width;
+      grayscaleCanvas.height = image.height;
+      const grayscaleContext = grayscaleCanvas.getContext('2d')!;
+      grayscaleContext.filter = 'grayscale(1) contrast(2)';
+      grayscaleContext.drawImage(image, 0, 0);
+      canvases.push(grayscaleCanvas);
 
-      // Center crop (50%)
-      const cropW = Math.floor(img.width * 0.7);
-      const cropH = Math.floor(img.height * 0.7);
-      const c3 = document.createElement('canvas');
-      c3.width = cropW; c3.height = cropH;
-      c3.getContext('2d')!.drawImage(img,
-        (img.width - cropW) / 2, (img.height - cropH) / 2, cropW, cropH,
-        0, 0, cropW, cropH
+      const cropWidth = Math.floor(image.width * 0.7);
+      const cropHeight = Math.floor(image.height * 0.7);
+      const cropCanvas = document.createElement('canvas');
+      cropCanvas.width = cropWidth;
+      cropCanvas.height = cropHeight;
+      cropCanvas.getContext('2d')!.drawImage(
+        image,
+        (image.width - cropWidth) / 2,
+        (image.height - cropHeight) / 2,
+        cropWidth,
+        cropHeight,
+        0,
+        0,
+        cropWidth,
+        cropHeight
       );
-      canvases.push(c3);
+      canvases.push(cropCanvas);
 
-      // Horizontal strip through middle (for close-up barcode shots)
-      const stripH = Math.floor(img.height * 0.3);
-      const c4 = document.createElement('canvas');
-      c4.width = img.width; c4.height = stripH;
-      c4.getContext('2d')!.drawImage(img,
-        0, (img.height - stripH) / 2, img.width, stripH,
-        0, 0, img.width, stripH
+      const stripHeight = Math.floor(image.height * 0.3);
+      const stripCanvas = document.createElement('canvas');
+      stripCanvas.width = image.width;
+      stripCanvas.height = stripHeight;
+      stripCanvas.getContext('2d')!.drawImage(
+        image,
+        0,
+        (image.height - stripHeight) / 2,
+        image.width,
+        stripHeight,
+        0,
+        0,
+        image.width,
+        stripHeight
       );
-      canvases.push(c4);
+      canvases.push(stripCanvas);
 
-      // Upscaled 2x (helps with small/low-res barcodes)
-      const c5 = document.createElement('canvas');
-      c5.width = img.width * 2; c5.height = img.height * 2;
-      const ctx5 = c5.getContext('2d')!;
-      ctx5.imageSmoothingEnabled = false;
-      ctx5.drawImage(img, 0, 0, c5.width, c5.height);
-      canvases.push(c5);
+      const upscaledCanvas = document.createElement('canvas');
+      upscaledCanvas.width = image.width * 2;
+      upscaledCanvas.height = image.height * 2;
+      const upscaledContext = upscaledCanvas.getContext('2d')!;
+      upscaledContext.imageSmoothingEnabled = false;
+      upscaledContext.drawImage(image, 0, 0, upscaledCanvas.width, upscaledCanvas.height);
+      canvases.push(upscaledCanvas);
 
       let decoded: string | null = null;
+
       for (const canvas of canvases) {
         try {
           const codeReader = new ZX.BrowserMultiFormatReader(hints);
           const result = codeReader.decodeFromCanvas(canvas);
-          const txt = result?.getText?.();
-          if (txt) { decoded = txt; break; }
+          const text = result?.getText?.();
+          if (text) {
+            decoded = text;
+            break;
+          }
         } catch {
-          // try next strategy
+          // Keep trying alternate decode strategies.
         }
       }
 
       if (decoded && /^\d{8,14}$/.test(decoded)) {
         setCode(decoded);
-        lookup(decoded);
-      } else if (decoded) {
-        setCode(decoded);
-        setError(`Barcode found ("${decoded}") but it doesn't look like a product barcode (expected 8–14 digits).`);
-        setLoading(false);
-      } else {
-        setError('No barcode detected. Tips: crop to just the barcode area, ensure good lighting, and avoid glare or blur.');
-        setLoading(false);
+        await lookup(decoded);
+        return;
       }
-    } catch (e: any) {
-      setError('No barcode detected. Tips: crop to just the barcode area, ensure good lighting, and avoid glare or blur.');
-      setLoading(false);
+
+      if (decoded) {
+        setCode(decoded);
+        setLookupError(
+          `Barcode found ("${decoded}") but it doesn't look like a product barcode (expected 8–14 digits).`
+        );
+        return;
+      }
+
+      setLookupError(
+        'No barcode detected. Tips: crop to just the barcode area, ensure good lighting, and avoid glare or blur.'
+      );
+    } catch {
+      setLookupError(
+        'No barcode detected. Tips: crop to just the barcode area, ensure good lighting, and avoid glare or blur.'
+      );
+    } finally {
+      setBarcodeLoading(false);
     }
   };
 
-  /** Try to extract just the ingredients portion from OCR text */
-  const extractIngredients = (raw: string): { extracted: string; wasFiltered: boolean } => {
-    // Normalize whitespace but preserve newlines for section detection
+  const extractIngredients = (
+    raw: string
+  ): { extracted: string; wasFiltered: boolean } => {
     const text = raw.replace(/\r\n/g, '\n').replace(/[ \t]+/g, ' ');
-
-    // Look for "ingredients" header/label — common patterns on food labels
-    // Match "INGREDIENTS:", "Ingredients:", "INGREDIENTS", etc.
-    const patterns = [
-      /ingredients\s*[:\-—]\s*/i,
-      /ingredients\s*\n/i,
-    ];
+    const patterns = [/ingredients\s*[:\-—]\s*/i, /ingredients\s*\n/i];
 
     for (const pattern of patterns) {
       const match = pattern.exec(text);
-      if (match) {
-        const start = match.index + match[0].length;
-        let section = text.slice(start);
+      if (!match) continue;
 
-        // Try to find where ingredients end — common next-section headers
-        const stopPatterns = [
-          /\n\s*(nutrition|manufactured|distributed|produced|allergen|allergy|warning|caution|storage|directions|best before|use by|serving|contains|may contain|for allergens|net w[te])/i,
-          /\n\s*(calories|total fat|sodium|protein|vitamin|iron|calcium)/i,
-        ];
+      const start = match.index + match[0].length;
+      let section = text.slice(start);
 
-        for (const stop of stopPatterns) {
-          const stopMatch = stop.exec(section);
-          if (stopMatch) {
-            section = section.slice(0, stopMatch.index);
-            break;
-          }
-        }
+      const stopPatterns = [
+        /\n\s*(nutrition|manufactured|distributed|produced|allergen|allergy|warning|caution|storage|directions|best before|use by|serving|contains|may contain|for allergens|net w[te])/i,
+        /\n\s*(calories|total fat|sodium|protein|vitamin|iron|calcium)/i,
+      ];
 
-        // Clean up: collapse newlines to spaces (ingredient lists wrap across lines)
-        const cleaned = section.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-        if (cleaned.length > 10) {
-          return { extracted: cleaned, wasFiltered: true };
-        }
+      for (const stopPattern of stopPatterns) {
+        const stopMatch = stopPattern.exec(section);
+        if (!stopMatch) continue;
+        section = section.slice(0, stopMatch.index);
+        break;
+      }
+
+      const cleaned = section.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+      if (cleaned.length > 10) {
+        return { extracted: cleaned, wasFiltered: true };
       }
     }
 
-    // Fallback: return full text collapsed to single line
-    return { extracted: text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim(), wasFiltered: false };
+    return {
+      extracted: text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim(),
+      wasFiltered: false,
+    };
   };
 
   const readIngredients = async () => {
     if (!capturedImage) return;
+
     setOcrStatus('Initializing OCR…');
-    setError(null);
+    setLookupError(null);
+    setPasteError(null);
+
     try {
       const Tesseract = await import('tesseract.js');
       setOcrStatus('Reading text…');
       const { data } = await Tesseract.recognize(capturedImage, 'eng');
       const text = data.text?.trim();
+
       if (!text) {
+        setLookupError(
+          'No text detected in this image. Try a clearer photo of the ingredient label.'
+        );
         setOcrStatus(null);
-        setError('No text detected in this image. Try a clearer photo of the ingredient label.');
         return;
       }
+
       const { extracted, wasFiltered } = extractIngredients(text);
       setPasteText(extracted);
       setOcrStatus(null);
-      // Auto-trigger watchlist check
-      setProduct(null);
-      setPasteResult(extracted);
+
       if (!wasFiltered) {
-        setError('Could not isolate the ingredients section — showing all detected text. You can edit it below before checking.');
+        setLookupError(
+          'Could not isolate the ingredients section — showing all detected text. You can edit it below before checking.'
+        );
       }
-    } catch (e: any) {
+    } catch (error: unknown) {
       setOcrStatus(null);
-      setError('OCR failed: ' + (e?.message || 'Unknown error'));
+      setLookupError(
+        `OCR failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   };
 
@@ -389,79 +463,149 @@ export default function ScannerPage(){
   };
 
   const lookup = async (barcode: string) => {
-    setLoading(true); setError(null); setProduct(null);
+    setBarcodeLoading(true);
+    setLookupError(null);
+    setProduct(null);
     setPasteResult(null);
+    setPasteMatches([]);
+    setPasteSummary(null);
+
     try {
-      const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-      const data = await res.json();
-      if (data?.status !== 1) {
-        setError('Product not found in Open Food Facts');
-        setLoading(false);
+      const response = await fetch(
+        `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`
+      );
+      const data = (await response.json()) as {
+        status?: number;
+        product?: ScannerProduct;
+      };
+
+      if (data.status !== 1 || !data.product) {
+        setLookupError('Product not found in Open Food Facts');
         return;
       }
+
       setProduct(data.product);
-    } catch (e: any) {
-      setError('Lookup failed. Check your network connection.');
+    } catch {
+      setLookupError('Lookup failed. Check your network connection.');
     } finally {
-      setLoading(false);
+      setBarcodeLoading(false);
     }
   };
 
-  const matchesFor = (text: string) => WATCHLIST.filter(m => m.regex.test(text));
-
-  const submitManual = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (code && /^\d{8,14}$/.test(code)) lookup(code);
+  const submitManual = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (code && /^\d{8,14}$/.test(code)) {
+      void lookup(code);
+    }
   };
 
-  const checkPastedIngredients = () => {
-    if (!pasteText.trim()) return;
+  const validatePasteInput = (value: string): string | null => {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return 'Paste an ingredient list before checking.';
+    }
+
+    if (!/[a-zA-Z]/.test(trimmed) || trimmed.length < 8) {
+      return 'Add more readable ingredient text before checking so the scanner has something useful to interpret.';
+    }
+
+    return null;
+  };
+
+  const checkPastedIngredients = async () => {
+    const validationError = validatePasteInput(pasteText);
+    if (validationError) {
+      setPasteError(validationError);
+      return;
+    }
+
+    setPasteSubmitting(true);
+    setPasteError(null);
+    setLookupError(null);
     setProduct(null);
-    setError(null);
-    setPasteResult(pasteText.trim());
+
+    const response = await classifyIngredients(pasteText);
+
+    setPasteSubmitting(false);
+
+    if (response.error) {
+      setPasteMatches([]);
+      setPasteResult(null);
+      setPasteSummary(null);
+      setPasteError(response.error.message);
+      return;
+    }
+
+    setPasteResult(response.data?.input_text ?? pasteText.trim());
+    setPasteMatches(response.data?.results ?? []);
+    setPasteSummary(
+      response.data?.summary ?? fallbackSummaryFromMatches(response.data?.results ?? [])
+    );
   };
 
-  // Barcode product results
-  const ingredientText: string = product?.ingredients_text || product?.ingredients_text_en || '';
+  const ingredientText =
+    product?.ingredients_text || product?.ingredients_text_en || '';
   const combinedText = [
     ingredientText,
-    (product?.ingredients || []).map((i: any) => i?.text).filter(Boolean).join(', '),
-  ].filter(Boolean).join(', ');
-  const barcodeMatched = combinedText ? matchesFor(combinedText) : [];
-
-  // Paste results
-  const pasteMatched = pasteResult ? matchesFor(pasteResult) : [];
-
-  const estimateIngredientCount = (text: string) => text.split(/[,;]/).filter(s => s.trim()).length;
+    (product?.ingredients ?? [])
+      .map((ingredient) => ingredient.text)
+      .filter(Boolean)
+      .join(', '),
+  ]
+    .filter(Boolean)
+    .join(', ');
+  const hasTrustedProductIngredients = hasUsableProductIngredients(combinedText);
 
   return (
-    <Layout title="Scanner" description="Scan barcodes or paste ingredient lists to check for alpha-gal triggers. Color-coded risk tiers help identify mammalian-derived ingredients.">
+    <Layout
+      title="Scanner"
+      description="Scan barcodes or paste ingredient lists to check for alpha-gal triggers. Color-coded risk tiers help identify mammalian-derived ingredients."
+      noindex
+    >
       <div className="prose max-w-none">
         <h1>Ingredient & product scanner (beta)</h1>
         <p>
-          Scan a package barcode or paste an ingredient list to check for ingredients that some alpha-gal
-          patients watch. Educational use only — decisions should be individualized with your clinician.
+          Scan a package barcode or paste an ingredient list to check for
+          ingredients that some alpha-gal patients watch. This tool is designed
+          to be conservative and practical, not to diagnose or guarantee safety.
         </p>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        {/* Left column: inputs */}
-        <div className="space-y-4">
-          {/* Camera / Photo card */}
-          <div className="card p-4">
-            <div className="font-semibold mb-2">Camera / Photo</div>
+      <TrustNotice title="Educational decision support" tone="teal">
+        The scanner helps you spot <strong>known risk</strong>,{' '}
+        <strong>caution</strong>, and <strong>unclear</strong> ingredients so
+        you can choose the safest next step. It cannot confirm that a product is
+        safe for every person, and it should not replace manufacturer
+        verification or clinician guidance when the stakes are high.
+      </TrustNotice>
 
-            {/* Camera controls */}
-            <div className="flex flex-wrap items-center gap-2 mb-2">
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_1.05fr]">
+        <div className="space-y-4">
+          <div className="card p-4">
+            <h2 className="mb-2 text-lg font-semibold">Camera or photo</h2>
+
+            <div className="mb-2 flex flex-wrap items-center gap-2">
               {!active ? (
-                <button className="btn" onClick={startScanner}>Start Camera</button>
+                <button className="btn" onClick={startScanner}>
+                  Start Camera
+                </button>
               ) : (
                 <>
-                  <button className="btn" onClick={stopScanner}>Stop</button>
-                  <button className="btn" onClick={captureFrame}>Capture</button>
+                  <button className="btn" onClick={() => void stopScanner()}>
+                    Stop
+                  </button>
+                  <button className="btn" onClick={captureFrame}>
+                    Capture
+                  </button>
                 </>
               )}
-              <button className="btn" onClick={() => fileInputRef.current?.click()}>Upload Photo</button>
+              <button
+                className="btn"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Upload Photo
+              </button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -469,173 +613,365 @@ export default function ScannerPage(){
                 capture="environment"
                 className="hidden"
                 onChange={handleFileUpload}
+                aria-label="Upload a barcode or ingredient photo"
               />
             </div>
 
-            {/* Camera view */}
-            {active && !capturedImage && (
-              <div className="aspect-video bg-black/80 rounded overflow-hidden">
-                <video ref={videoRef} className="w-full h-full object-cover" muted playsInline/>
+            {active && !capturedImage ? (
+              <div className="aspect-video overflow-hidden rounded bg-black/80">
+                <video
+                  ref={videoRef}
+                  className="h-full w-full object-cover"
+                  muted
+                  playsInline
+                />
               </div>
-            )}
+            ) : null}
 
-            {/* Hidden video element when camera not active (needed for ref) */}
-            {!active && <video ref={videoRef} className="hidden" muted playsInline/>}
+            {!active ? (
+              <video ref={videoRef} className="hidden" muted playsInline />
+            ) : null}
 
-            {/* Captured image preview */}
-            {capturedImage && (
+            {capturedImage ? (
               <div className="mt-2">
                 <div className="relative">
-                  <img src={capturedImage} alt="Captured" className="w-full rounded border" />
+                  <img
+                    src={capturedImage}
+                    alt="Captured"
+                    className="w-full rounded border"
+                  />
                   <button
-                    className="absolute top-1 right-1 bg-white/80 hover:bg-white rounded-full px-2 py-0.5 text-xs font-medium"
+                    className="absolute right-2 top-2 inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-white/90 px-2 text-xs font-semibold text-slate-800 shadow-sm transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
                     onClick={clearCapture}
                     title="Clear photo"
+                    aria-label="Clear photo"
                   >
                     ✕
                   </button>
                 </div>
-                <div className="flex gap-2 mt-2">
-                  <button className="btn flex-1" onClick={decodeBarcode} disabled={!!ocrStatus || loading}>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <button
+                    className="btn flex-1"
+                    onClick={() => void decodeBarcode()}
+                    disabled={!!ocrStatus || barcodeLoading || pasteSubmitting}
+                  >
                     Decode Barcode
                   </button>
-                  <button className="btn flex-1" onClick={readIngredients} disabled={!!ocrStatus || loading}>
+                  <button
+                    className="btn flex-1"
+                    onClick={() => void readIngredients()}
+                    disabled={!!ocrStatus || barcodeLoading || pasteSubmitting}
+                  >
                     Read Ingredients (OCR)
                   </button>
                 </div>
               </div>
-            )}
+            ) : null}
 
-            {/* OCR progress */}
-            {ocrStatus && (
-              <div className="mt-2 text-sm text-blue-700 flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+            {ocrStatus ? (
+              <div
+                className="mt-2 flex items-center gap-2 text-sm text-blue-700"
+                role="status"
+                aria-live="polite"
+              >
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
                 </svg>
                 {ocrStatus}
               </div>
-            )}
+            ) : null}
 
-            {/* Manual barcode input */}
-            <form onSubmit={submitManual} className="mt-3 flex gap-2">
-              <input className="input w-full" placeholder="Or enter barcode (8–14 digits)" value={code} onChange={e=>setCode(e.target.value.replace(/\D/g,''))} />
-              <button className="btn" type="submit">Lookup</button>
+            <form
+              onSubmit={submitManual}
+              className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]"
+            >
+              <label className="sr-only" htmlFor="barcode-input">
+                Enter barcode
+              </label>
+              <input
+                id="barcode-input"
+                className="input w-full"
+                placeholder="Or enter barcode (8-14 digits)"
+                value={code}
+                onChange={(event) =>
+                  setCode(event.target.value.replace(/\D/g, ''))
+                }
+                inputMode="numeric"
+              />
+              <button
+                className="btn"
+                type="submit"
+                disabled={barcodeLoading || pasteSubmitting}
+              >
+                Lookup
+              </button>
             </form>
-            {error && <div className="mt-2 text-sm text-red-600">{error}</div>}
-            {loading && <div className="mt-2 text-sm">Looking up product…</div>}
+
+            {lookupError ? (
+              <div
+                className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                role="alert"
+              >
+                {lookupError}
+              </div>
+            ) : null}
+
+            {barcodeLoading ? (
+              <div className="mt-2 text-sm" role="status" aria-live="polite">
+                Looking up product...
+              </div>
+            ) : null}
           </div>
 
-          {/* Paste ingredients */}
           <div className="card p-4">
-            <div className="font-semibold mb-2">Paste Ingredients</div>
+            <h2 className="mb-2 text-lg font-semibold">Paste ingredients</h2>
+            <p className="mb-2 text-sm leading-6 text-slate-600">
+              Paste the ingredient panel from a label or product page, then
+              review or edit it before you check.
+            </p>
+            <label
+              className="text-sm font-medium text-slate-900"
+              htmlFor="paste-ingredients"
+            >
+              Ingredient list
+            </label>
             <textarea
-              className="input w-full h-28 resize-y"
+              id="paste-ingredients"
+              className="input mt-2 h-32 w-full resize-y"
               placeholder="Paste ingredient list here..."
               value={pasteText}
-              onChange={e => setPasteText(e.target.value)}
+              onChange={(event) => {
+                setPasteText(event.target.value);
+                if (pasteError) setPasteError(null);
+              }}
+              aria-describedby="paste-ingredients-help"
             />
+            <p id="paste-ingredients-help" className="mt-2 text-sm text-slate-600">
+              Conservative educational guidance only. If the source is unclear,
+              verify before buying or using.
+            </p>
             <button
-              className="btn mt-2"
-              onClick={checkPastedIngredients}
-              disabled={!pasteText.trim()}
+              className="btn mt-3"
+              onClick={() => void checkPastedIngredients()}
+              disabled={pasteSubmitting || barcodeLoading}
             >
-              Check Ingredients
+              {pasteSubmitting ? 'Checking ingredients…' : 'Check Ingredients'}
             </button>
+
+            {pasteError ? (
+              <div
+                className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                role="alert"
+              >
+                {pasteError}
+              </div>
+            ) : null}
+
+            {pasteSubmitting ? (
+              <div
+                className="mt-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-800"
+                role="status"
+                aria-live="polite"
+              >
+                Ingredient interpretation is in progress. Keep reviewing the
+                label while the scanner checks the text.
+              </div>
+            ) : null}
           </div>
         </div>
 
-        {/* Right column: results */}
-        <div className="card p-4">
-          <div className="font-semibold mb-2">Result</div>
+        <section className="card p-4" aria-labelledby="scanner-result-heading">
+          <h2 id="scanner-result-heading" className="mb-2 text-lg font-semibold">
+            Result
+          </h2>
 
-          {/* Barcode product result */}
-          {product && (
+          {product ? (
             <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                {product?.image_small_url ? (
-                  <img src={product.image_small_url} alt={product.product_name || 'Product'} className="w-20 h-20 object-cover rounded border"/>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                {product.image_small_url ? (
+                  <img
+                    src={product.image_small_url}
+                    alt={product.product_name || 'Product'}
+                    className="h-20 w-20 rounded border object-cover"
+                  />
                 ) : null}
                 <div>
-                  <div className="font-medium">{product.product_name || 'Unnamed product'}</div>
-                  <div className="text-sm text-slate-600">{product.brands || product.brand_owner || ''}</div>
-                  <div className="text-xs text-slate-500">Barcode: {product.code}</div>
+                  <div className="font-medium">
+                    {product.product_name || 'Unnamed product'}
+                  </div>
+                  <div className="text-sm text-slate-600">
+                    {product.brands || product.brand_owner || ''}
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    Barcode: {product.code}
+                  </div>
                 </div>
               </div>
 
-              {combinedText ? (
+              {hasTrustedProductIngredients ? (
                 <>
-                  <VerdictBanner matched={barcodeMatched} ingredientCount={estimateIngredientCount(combinedText)} />
-                  <div>
-                    <div className="text-sm text-slate-600 mb-1">Ingredients</div>
-                    <div className="text-sm">{highlight(combinedText, barcodeMatched)}</div>
+                  <div className="rounded border border-slate-300 bg-slate-50 p-3 text-sm text-slate-700">
+                    Barcode product review still uses the existing browser-side
+                    watchlist on this page. Paste-first submission now routes
+                    through the shared scanner service boundary introduced in
+                    this story.
                   </div>
-                  {barcodeMatched.length > 0 && (
-                    <div>
-                      <div className="text-sm text-slate-600 mb-1">Watchlist matches</div>
-                      <MatchList matched={barcodeMatched} />
+                  <div aria-label="Scanned ingredients">
+                    <div className="mb-1 text-sm font-medium text-slate-700">
+                      Ingredients reviewed
                     </div>
-                  )}
+                    <div className="text-sm">{combinedText}</div>
+                  </div>
                 </>
               ) : (
-                <div className="p-3 rounded border border-slate-300 bg-slate-50 text-slate-700 text-sm">
-                  No ingredient data available for this product in Open Food Facts. Try pasting the ingredient list manually using the "Paste Ingredients" box.
+                <div className="rounded border border-slate-300 bg-slate-50 p-3 text-sm text-slate-700">
+                  Ingredient data from Open Food Facts looks incomplete or unreliable for this barcode, so the scanner is not treating it as reviewed. Upload a clear photo of the actual ingredient panel with <strong>Read Ingredients (OCR)</strong> or paste the ingredient list manually.
                 </div>
               )}
 
-              <div className="mt-2 p-2 rounded bg-amber-50 text-amber-900 border border-amber-200 text-xs">
-                Not medical advice. Some excipients are from plant/microbial sources and may be tolerated; management should be clinician-guided.
+              <div className="mt-2 rounded border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">
+                This result is educational support, not a diagnosis. Some
+                excipients may be plant, microbial, or mammal-sourced, so
+                unclear cases still need verification.
               </div>
             </div>
-          )}
+          ) : null}
 
-          {/* Paste result */}
-          {pasteResult && !product && (
+          {pasteResult && !product ? (
             <div className="space-y-3">
-              <VerdictBanner matched={pasteMatched} ingredientCount={estimateIngredientCount(pasteResult)} />
+              <ScannerResultSummaryCard
+                summary={pasteSummary ?? fallbackSummaryFromMatches(pasteMatches)}
+                ingredientCount={estimateIngredientCount(pasteResult)}
+                watchlistCount={getScannerWatchlistCount()}
+                resultCount={pasteMatches.length}
+              />
               <div>
-                <div className="text-sm text-slate-600 mb-1">Ingredients</div>
-                <div className="text-sm">{highlight(pasteResult, pasteMatched)}</div>
-              </div>
-              {pasteMatched.length > 0 && (
-                <div>
-                  <div className="text-sm text-slate-600 mb-1">Watchlist matches</div>
-                  <MatchList matched={pasteMatched} />
+                <div className="mb-1 text-sm font-medium text-slate-700">
+                  Ingredients reviewed
                 </div>
-              )}
-              <div className="mt-2 p-2 rounded bg-amber-50 text-amber-900 border border-amber-200 text-xs">
-                Not medical advice. Some excipients are from plant/microbial sources and may be tolerated; management should be clinician-guided.
+                <div className="text-sm">{highlight(pasteResult, pasteMatches)}</div>
+              </div>
+              <ScannerClassificationList items={pasteMatches} />
+              <ScannerEducationGuidance
+                summary={pasteSummary ?? fallbackSummaryFromMatches(pasteMatches)}
+                items={pasteMatches}
+              />
+              <div className="mt-2 rounded border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">
+                This result is educational support, not a diagnosis. Use
+                caution when ingredient sources are unclear and verify before
+                buying or using.
               </div>
             </div>
-          )}
+          ) : null}
 
-          {/* Empty state */}
-          {!product && !pasteResult && (
-            <div className="text-sm text-slate-600">Scan a barcode or paste ingredients to get started.</div>
-          )}
-        </div>
+          {!product && !pasteResult ? (
+            <div className="text-sm text-slate-600">
+              Scan a barcode or paste ingredients to get started.
+            </div>
+          ) : null}
+        </section>
       </div>
 
-      {/* Hidden canvas for frame capture */}
       <canvas ref={canvasRef} className="hidden" />
 
-      <div className="prose max-w-none mt-8">
+      <div className="prose mt-8 max-w-none">
         <h3>How it works</h3>
         <ul>
-          <li>Barcodes are read locally on your device using the camera (ZXing).</li>
-          <li>You can capture a photo to decode a barcode or read ingredient text via OCR (Tesseract.js — runs entirely in your browser).</li>
-          <li>We query the Open Food Facts public API for product data and ingredients.</li>
-          <li>You can also paste an ingredient list directly from a label or website.</li>
-          <li>Ingredients are checked against {WATCHLIST.length} known alpha-gal-related items across three risk tiers:
-            <span className="inline-block ml-1 px-1.5 py-0.5 rounded bg-red-100 text-red-800 text-xs font-medium">avoid</span>{' '}
-            <span className="inline-block px-1.5 py-0.5 rounded bg-orange-100 text-orange-800 text-xs font-medium">high risk</span>{' '}
-            <span className="inline-block px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-xs font-medium">check source</span>
+          <li>
+            Barcodes are read locally on your device using the camera (ZXing).
+          </li>
+          <li>
+            You can capture a photo to decode a barcode or read ingredient text
+            via OCR (Tesseract.js runs entirely in your browser).
+          </li>
+          <li>
+            We query the Open Food Facts public API for product data and
+            ingredients.
+          </li>
+          <li>
+            You can also paste an ingredient list directly from a label or
+            website.
+          </li>
+          <li>
+            Paste-first scanner submission now runs through a shared scanner
+            service boundary, with a local fallback adapter when no backend
+            endpoint is configured yet.
+          </li>
+          <li>
+            Ingredients are checked against {getScannerWatchlistCount()} known
+            alpha-gal-related watchlist entries using text labels, not color
+            alone:
+            <span className="ml-1 inline-block rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-800">
+              known risk / avoid
+            </span>{' '}
+            <span className="inline-block rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
+              caution / verify before using
+            </span>{' '}
+            <span className="inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-800">
+              unknown / research before buying
+            </span>
           </li>
         </ul>
         <p>
-          References: <a href="https://www.cdc.gov/ticks/alpha-gal/consumers.html" target="_blank" rel="noreferrer">CDC products that may contain alpha-gal</a>,{' '}
-          <a href="https://www.aaaai.org/tools-for-the-public/conditions-library/allergies/alpha-gal-syndrome" target="_blank" rel="noreferrer">AAAAI: Alpha-gal syndrome</a>.
+          References:{' '}
+          <a
+            href="https://www.cdc.gov/ticks/alpha-gal/consumers.html"
+            target="_blank"
+            rel="noreferrer"
+          >
+            CDC products that may contain alpha-gal
+          </a>
+          ,{' '}
+          <a
+            href="https://www.aaaai.org/tools-for-the-public/conditions-library/allergies/alpha-gal-syndrome"
+            target="_blank"
+            rel="noreferrer"
+          >
+            AAAAI: Alpha-gal syndrome
+          </a>
+          .
         </p>
+      </div>
+
+      <div className="mt-8">
+        <PreparednessResourcePanel
+          eyebrow='After the ingredient check'
+          title='Keep follow-on tools close when the answer affects meals or emergencies'
+          description='Scanner results can tell you whether to pause, verify, or avoid. When that leads into restaurant planning, printable backups, or emergency visibility, the next step should stay within reach from the same page.'
+          links={[
+            {
+              href: '/downloads',
+              label: 'Preparedness downloads',
+              description:
+                'Open the printable dining and wallet tools when the ingredient decision needs a practical backup for restaurants, travel, or intake.',
+            },
+            {
+              href: '/learn/dining-card-guide',
+              label: 'Get dining cards',
+              description:
+                'Use the dining card when kitchen communication or cross-contact concerns matter more than the packaged ingredient list alone.',
+            },
+            {
+              href: '/learn/medical-alert-tattoo',
+              label: 'Medical alert guide',
+              description:
+                'Review visibility-focused preparedness options if the ingredient question connects to broader emergency planning.',
+            },
+          ]}
+        />
       </div>
     </Layout>
   );

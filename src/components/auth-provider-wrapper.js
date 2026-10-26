@@ -9,10 +9,9 @@ const config = {
   scope: process.env.GATSBY_COGNITO_SCOPE || "openid profile email",
 };
 
-const hasRequiredConfig = config.authority && config.client_id && config.redirect_uri;
-
 export default function AuthProviderWrapper({ children }) {
-  if (typeof window === "undefined" || !hasRequiredConfig) {
+  // Skip provider during SSR — AuthProvider requires a browser environment
+  if (typeof window === "undefined") {
     return <>{children}</>;
   }
 

@@ -1,0 +1,81 @@
+# generated: 2026-04-17
+# last_updated: 2026-04-23 (story 5-5 → done; epic 5 complete)
+# project: alphagaldata
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: /home/shawnmonk/monk/collection/alphagaldata/_bmad-output/implementation-artifacts
+#
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-04-17
+last_updated: 2026-04-23
+project: alphagaldata
+project_key: NOKEY
+tracking_system: file-system
+story_location: /home/shawnmonk/monk/collection/alphagaldata/_bmad-output/implementation-artifacts
+
+development_status:
+  epic-1: done
+  1-1-public-site-shell-and-trust-navigation: done
+  1-2-homepage-with-dual-entry-points: done
+  1-3-discoverable-public-content-and-topical-routing: done
+  1-4-trust-and-safety-framing-on-public-content: done
+  1-5-featured-content-management-for-public-discovery: done
+  1-6-responsive-and-accessible-public-experience: done
+  epic-1-retrospective: optional
+
+  epic-2: done
+  2-1-recipe-detail-pages-with-safety-context: done
+  2-2-recipe-safety-notes-and-trust-explanation: done
+  2-3-save-recipe-interaction-and-persistence: done
+  2-4-return-to-saved-recipes: done
+  epic-2-retrospective: optional
+
+  epic-3: done
+  3-1-ingredient-scanner-input-and-submission: done
+  3-2-ingredient-classification-and-risk-results: done
+  3-3-unknown-ingredient-and-caution-handling: done
+  3-4-label-reading-and-cross-contamination-guidance: done
+  epic-3-retrospective: optional
+
+  epic-4: done
+  4-1-dining-safe-cards-and-resource-download-access: done
+  4-2-medical-alert-and-preparedness-guidance: done
+  4-3-tattoo-and-testing-guidance-pages: done
+  4-4-preparedness-resource-surfacing-across-the-site: done
+  epic-4-retrospective: optional
+
+  epic-5: done
+  5-1-public-submission-intake-for-recipes-and-stories: done
+  5-2-protected-moderation-review-workflow: done
+  5-3-publication-safety-enforcement-and-editorial-notes: done
+  5-4-editorial-updates-for-trusted-public-content-and-resources: done
+  5-5-future-ready-community-and-account-boundaries: done
+  epic-5-retrospective: optional

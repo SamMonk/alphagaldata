@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AlphaGalData UX Design Directions</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f1e8;
+        --panel: rgba(255, 255, 255, 0.82);
+        --panel-strong: #ffffff;
+        --text: #1e2722;
+        --muted: #5b655d;
+        --line: rgba(34, 54, 44, 0.12);
+        --shadow: 0 24px 60px rgba(35, 44, 38, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top, rgba(173, 136, 84, 0.12), transparent 32rem),
+          linear-gradient(180deg, #fbf8f3 0%, var(--bg) 100%);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .intro {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: grid;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 18px 20px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(248, 243, 235, 0.94);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+      }
+
+      .intro h1 {
+        margin: 0;
+        font: 700 clamp(1.8rem, 2.2vw, 2.8rem) / 1.05 "Fraunces", "Georgia", serif;
+      }
+
+      .intro p {
+        margin: 0;
+        max-width: 78ch;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .jump-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .jump-links a {
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 0.92rem;
+      }
+
+      .directions {
+        display: grid;
+        gap: 28px;
+      }
+
+      .direction {
+        overflow: hidden;
+        border-radius: 28px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .direction-head {
+        display: grid;
+        gap: 8px;
+        padding: 24px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.64);
+      }
+
+      .direction-label {
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .direction-head h2 {
+        margin: 0;
+        font: 700 clamp(1.5rem, 2vw, 2.2rem) / 1.08 "Fraunces", "Georgia", serif;
+      }
+
+      .direction-head p {
+        margin: 0;
+        max-width: 72ch;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .mockup {
+        min-height: 760px;
+        padding: 28px;
+      }
+
+      .mockup-grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .mockup-card {
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        box-shadow: 0 16px 40px rgba(33, 40, 34, 0.08);
+      }
+
+      .topbar,
+      .nav-row,
+      .recipe-row,
+      .tool-row,
+      .pill-row,
+      .footer-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .topbar {
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+      }
+
+      .brand-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .nav-chip,
+      .status-pill,
+      .button,
+      .mini-card,
+      .info-line {
+        border-radius: 999px;
+      }
+
+      .nav-chip,
+      .status-pill {
+        padding: 8px 12px;
+        font-size: 0.86rem;
+      }
+
+      .hero {
+        display: grid;
+        gap: 18px;
+        margin-bottom: 18px;
+        padding: 28px;
+      }
+
+      .hero h3,
+      .hero p,
+      .hero ul {
+        margin: 0;
+      }
+
+      .hero h3 {
+        font: 700 clamp(1.6rem, 3vw, 3.2rem) / 1.02 "Fraunces", "Georgia", serif;
+      }
+
+      .hero p {
+        max-width: 56ch;
+        line-height: 1.6;
+      }
+
+      .button {
+        padding: 11px 16px;
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid transparent;
+      }
+
+      .content-grid-2 {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 18px;
+      }
+
+      .content-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      .panel {
+        padding: 22px;
+      }
+
+      .panel h4,
+      .panel h5,
+      .panel p {
+        margin: 0;
+      }
+
+      .panel h4 {
+        font-size: 1.05rem;
+      }
+
+      .panel h5 {
+        font-size: 0.95rem;
+      }
+
+      .panel p,
+      .panel li {
+        color: #526058;
+        line-height: 1.55;
+      }
+
+      .list {
+        margin: 12px 0 0;
+        padding-left: 18px;
+      }
+
+      .recipe-card-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .scanner-box {
+        display: grid;
+        gap: 14px;
+        padding: 22px;
+      }
+
+      .input {
+        min-height: 90px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(32, 49, 41, 0.12);
+        background: rgba(248, 247, 243, 0.92);
+        color: #506159;
+        line-height: 1.5;
+      }
+
+      .risk-table {
+        display: grid;
+        gap: 10px;
+      }
+
+      .risk-row {
+        display: grid;
+        grid-template-columns: 132px 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .risk-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .meter {
+        height: 12px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(41, 56, 46, 0.1);
+      }
+
+      .meter > span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+      }
+
+      .direction-note {
+        margin-top: 18px;
+        padding: 16px 18px;
+        border-top: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.56);
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .dir-1 {
+        background: linear-gradient(180deg, #eff4ee 0%, #f7f3ea 100%);
+      }
+      .dir-1 .brand-mark,
+      .dir-1 .button-primary,
+      .dir-1 .meter-known span {
+        background: #265d49;
+        color: #fff;
+      }
+      .dir-1 .nav-chip,
+      .dir-1 .status-pill,
+      .dir-1 .button-secondary {
+        background: rgba(38, 93, 73, 0.08);
+        color: #214c3d;
+      }
+      .dir-1 .meter-caution span {
+        width: 62%;
+        background: #af7b29;
+      }
+      .dir-1 .meter-unknown span {
+        width: 44%;
+        background: #6f7c76;
+      }
+      .dir-1 .meter-known span {
+        width: 86%;
+      }
+
+      .dir-2 {
+        background: linear-gradient(180deg, #fbf6ef 0%, #f0ece8 100%);
+      }
+      .dir-2 .brand-mark,
+      .dir-2 .button-primary,
+      .dir-2 .meter-known span {
+        background: #7d513a;
+        color: #fff;
+      }
+      .dir-2 .nav-chip,
+      .dir-2 .status-pill,
+      .dir-2 .button-secondary {
+        background: rgba(125, 81, 58, 0.1);
+        color: #6b4632;
+      }
+      .dir-2 .meter-caution span {
+        width: 68%;
+        background: #c08f44;
+      }
+      .dir-2 .meter-unknown span {
+        width: 38%;
+        background: #7f847f;
+      }
+      .dir-2 .meter-known span {
+        width: 82%;
+      }
+
+      .dir-3 {
+        background: linear-gradient(180deg, #eef3f6 0%, #f5f7f8 100%);
+      }
+      .dir-3 .brand-mark,
+      .dir-3 .button-primary,
+      .dir-3 .meter-known span {
+        background: #31566e;
+        color: #fff;
+      }
+      .dir-3 .nav-chip,
+      .dir-3 .status-pill,
+      .dir-3 .button-secondary {
+        background: rgba(49, 86, 110, 0.09);
+        color: #28475d;
+      }
+      .dir-3 .meter-caution span {
+        width: 58%;
+        background: #d39d4d;
+      }
+      .dir-3 .meter-unknown span {
+        width: 42%;
+        background: #73808a;
+      }
+      .dir-3 .meter-known span {
+        width: 84%;
+      }
+
+      .dir-4 {
+        background:
+          radial-gradient(circle at top left, rgba(189, 134, 81, 0.18), transparent 26rem),
+          linear-gradient(180deg, #f8f2ea 0%, #f1eee9 100%);
+      }
+      .dir-4 .brand-mark,
+      .dir-4 .button-primary,
+      .dir-4 .meter-known span {
+        background: #365b4f;
+        color: #fff;
+      }
+      .dir-4 .nav-chip,
+      .dir-4 .status-pill,
+      .dir-4 .button-secondary {
+        background: rgba(54, 91, 79, 0.08);
+        color: #2d4d43;
+      }
+      .dir-4 .meter-caution span {
+        width: 65%;
+        background: #ba7a2d;
+      }
+      .dir-4 .meter-unknown span {
+        width: 34%;
+        background: #78756f;
+      }
+      .dir-4 .meter-known span {
+        width: 79%;
+      }
+
+      .dir-5 {
+        background: linear-gradient(180deg, #f8f8f5 0%, #f0f0ec 100%);
+      }
+      .dir-5 .brand-mark,
+      .dir-5 .button-primary,
+      .dir-5 .meter-known span {
+        background: #2c4035;
+        color: #fff;
+      }
+      .dir-5 .nav-chip,
+      .dir-5 .status-pill,
+      .dir-5 .button-secondary {
+        background: rgba(44, 64, 53, 0.08);
+        color: #283a30;
+      }
+      .dir-5 .meter-caution span {
+        width: 54%;
+        background: #af8d49;
+      }
+      .dir-5 .meter-unknown span {
+        width: 46%;
+        background: #7b817c;
+      }
+      .dir-5 .meter-known span {
+        width: 87%;
+      }
+
+      .dir-6 {
+        background:
+          linear-gradient(120deg, rgba(38, 93, 73, 0.09), transparent 40%),
+          linear-gradient(180deg, #f6f4ed 0%, #ece8db 100%);
+      }
+      .dir-6 .brand-mark,
+      .dir-6 .button-primary,
+      .dir-6 .meter-known span {
+        background: #1f5a4b;
+        color: #fff;
+      }
+      .dir-6 .nav-chip,
+      .dir-6 .status-pill,
+      .dir-6 .button-secondary {
+        background: rgba(31, 90, 75, 0.08);
+        color: #1b4a3d;
+      }
+      .dir-6 .meter-caution span {
+        width: 61%;
+        background: #d08f3e;
+      }
+      .dir-6 .meter-unknown span {
+        width: 29%;
+        background: #84806f;
+      }
+      .dir-6 .meter-known span {
+        width: 91%;
+      }
+
+      @media (max-width: 980px) {
+        .content-grid-2,
+        .content-grid-3,
+        .risk-row {
+          grid-template-columns: 1fr;
+        }
+
+        .mockup {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <section class="intro">
+        <div>
+          <h1>AlphaGalData Design Directions</h1>
+          <p>
+            Six visual directions built from the UX goals already established:
+            calm trust, structured safety guidance, recipe-led comfort, and
+            conservative ingredient risk framing. Each direction uses the same
+            core content but shifts hierarchy, warmth, density, and trust cues.
+          </p>
+        </div>
+        <div class="jump-links">
+          <a href="#direction-1">1. Calm Editorial</a>
+          <a href="#direction-2">2. Hearth Guide</a>
+          <a href="#direction-3">3. Research Compass</a>
+          <a href="#direction-4">4. Family Table</a>
+          <a href="#direction-5">5. Structured Ledger</a>
+          <a href="#direction-6">6. Decision Engine</a>
+        </div>
+      </section>
+
+      <main class="directions">
+        <section class="direction" id="direction-1">
+          <div class="direction-head">
+            <div class="direction-label">Direction 1</div>
+            <h2>Calm Editorial</h2>
+            <p>
+              Best if you want AlphaGalData to feel like a trusted publication
+              first, with scanner and safety tools folded into a serene reading
+              experience.
+            </p>
+          </div>
+          <div class="mockup dir-1">
+            <div class="topbar">
+              <div class="brand"><div class="brand-mark">AG</div>AlphaGalData</div>
+              <div class="nav-row">
+                <div class="nav-chip">Recipes</div>
+                <div class="nav-chip">Scanner</div>
+                <div class="nav-chip">Cards</div>
+                <div class="nav-chip">Science</div>
+              </div>
+            </div>
+            <div class="hero mockup-card">
+              <div class="status-pill">Educational only. Not medical advice.</div>
+              <h3>Find safe comfort food without losing trust in the details.</h3>
+              <p>
+                Featured recipes lead, but every page connects to ingredient
+                science, dining cards, and next-step safety guidance.
+              </p>
+              <div class="pill-row">
+                <a class="button button-primary" href="#direction-1">Browse trusted recipes</a>
+                <a class="button button-secondary" href="#direction-1">Scan ingredients</a>
+              </div>
+            </div>
+            <div class="content-grid-2">
+              <div class="stack">
+                <div class="mockup-card panel">
+                  <div class="recipe-card-title">
+                    <h4>Creamy Lemon Coconut Soup</h4>
+                    <div class="status-pill">Save recipe</div>
+                  </div>
+                  <p>Comfort-first recipe card with warm photography space, safety note excerpt, and substitution summary.</p>
+                  <ul class="list">
+                    <li>Free from mammalian ingredients</li>
+                    <li>Safety note linked directly under ingredients</li>
+                    <li>Substitutions visible before save action</li>
+                  </ul>
+                </div>
+                <div class="mockup-card panel">
+                  <h4>Why users trust this direction</h4>
+                  <p>High readability, strong recipe emotion, and clear embedded caution language without heavy tool chrome.</p>
+                </div>
+              </div>
+              <div class="mockup-card scanner-box">
+                <h4>Ingredient scanner preview</h4>
+                <div class="input">gelatin, carrageenan, natural flavors, sea salt</div>
+                <div class="risk-table">
+                  <div class="risk-row"><div class="risk-label">Known risk</div><div class="meter meter-known"><span></span></div></div>
+                  <div class="risk-row"><div class="risk-label">Caution</div><div class="meter meter-caution"><span></span></div></div>
+                  <div class="risk-row"><div class="risk-label">Unknown</div><div class="meter meter-unknown"><span></span></div></div>
+                </div>
+                <p>Editorial layout keeps the scanner approachable, but still explicit about uncertainty.</p>
+              </div>
+            </div>
+            <div class="direction-note">Use this if recipe discovery should remain the emotional front door and the site should feel like a calm, trustworthy magazine with built-in safety intelligence.</div>
+          </div>
+        </section>
+
+        <section class="direction" id="direction-2">
+          <div class="direction-head">
+            <div class="direction-label">Direction 2</div>
+            <h2>Hearth Guide</h2>
+            <p>
+              Best if you want more visible warmth and family-tested food energy
+              without slipping into lifestyle-blog softness.
+            </p>
+          </div>
+          <div class="mockup dir-2">
+            <div class="topbar">
+              <div class="brand"><div class="brand-mark">AG</div>AlphaGalData</div>
+              <div class="nav-row">
+                <div class="nav-chip">Kitchen</div>
+                <div class="nav-chip">Safe Dining</div>
+                <div class="nav-chip">Ingredient Check</div>
+                <div class="nav-chip">Emergency Prep</div>
+              </div>
+            </div>
+            <div class="content-grid-2">
+              <div class="hero mockup-card">
+                <div class="status-pill">Family-tested and carefully explained</div>
+                <h3>Food that feels normal again, with the caution it deserves.</h3>
+                <p>
+                  Warmer typography, earth tones, and slightly softer surfaces
+                  make recipes feel inviting while still keeping structured
+                  safety notes near every action.
+                </p>
+                <div class="pill-row">
+                  <a class="button button-primary" href="#direction-2">Save a recipe</a>
+                  <a class="button button-secondary" href="#direction-2">Get dining cards</a>
+                </div>
+              </div>
+              <div class="stack">
+                <div class="mockup-card panel">
+                  <h4>Dining card panel</h4>
+                  <p>Printable resources get stronger visual presence so emergency and restaurant safety feel first-class, not buried utilities.</p>
+                </div>
+                <div class="mockup-card panel">
+                  <h4>Caution summary</h4>
+                  <p>Known risk and possible risk states remain clear, but the interface feels more human and less clinical.</p>
+                </div>
+              </div>
+            </div>
+            <div class="content-grid-3">
+              <div class="mockup-card panel">
+                <h5>Recipe card</h5>
+                <p>Big comfort-food title, short promise, save button, and a compact “why it’s safe” preview.</p>
+              </div>
+              <div class="mockup-card panel">
+                <h5>Scanner card</h5>
+                <p>Focused on reassurance through explanation, not just status output.</p>
+              </div>
+              <div class="mockup-card panel">
+                <h5>Research card</h5>
+                <p>Summarizes source strength and uncertainty in plain language.</p>
+              </div>
+            </div>
+            <div class="direction-note">Use this if emotional warmth and reclaiming food should be felt more immediately on the homepage and recipe index.</div>
+          </div>
+        </section>
+
+        <section class="direction" id="direction-3">
+          <div class="direction-head">
+            <div class="direction-label">Direction 3</div>
+            <h2>Research Compass</h2>
+            <p>
+              Best if you want AlphaGalData to lean harder into evidence,
+              structured reasoning, and public-health credibility.
+            </p>
+          </div>
+          <div class="mockup dir-3">
+            <div class="topbar">
+              <div class="brand"><div class="brand-mark">AG</div>AlphaGalData</div>
+              <div class="nav-row">
+                <div class="nav-chip">Evidence</div>
+                <div class="nav-chip">Recipes</div>
+                <div class="nav-chip">Ingredient Data</div>
+                <div class="nav-chip">Testing</div>
+              </div>
+            </div>
+            <div class="stack">
+              <div class="hero mockup-card">
+                <div class="status-pill">Structured guidance for variable reactions</div>
+                <h3>Clearer decisions through science-backed caution.</h3>
+                <p>
+                  More explicit source hierarchy, cleaner data modules, and
+                  stronger “known / caution / unknown” patterns make this feel
+                  closest to a research-backed resource center.
+                </p>
+              </div>
+              <div class="content-grid-3">
+                <div class="mockup-card panel">
+                  <h4>Known risk</h4>
+                  <p>Gelatin, mammal fat, broth, and other stronger AGS concerns appear with more explicit confidence language.</p>
+                </div>
+                <div class="mockup-card panel">
+                  <h4>Possible risk</h4>
+                  <p>Carrageenan and related caution cases explain evidence strength and why some users may still choose avoidance.</p>
+                </div>
+                <div class="mockup-card panel">
+                  <h4>Unknown</h4>
+                  <p>Unknown ingredients trigger research-first next steps rather than a weak pass/fail outcome.</p>
+                </div>
+              </div>
+              <div class="mockup-card scanner-box">
+                <h4>Scanner as decision support</h4>
+                <div class="input">beef stock, magnesium stearate, carrageenan, rosemary extract</div>
+                <div class="risk-table">
+                  <div class="risk-row"><div class="risk-label">Known risk</div><div class="meter meter-known"><span></span></div></div>
+                  <div class="risk-row"><div class="risk-label">Caution</div><div class="meter meter-caution"><span></span></div></div>
+                  <div class="risk-row"><div class="risk-label">Unknown</div><div class="meter meter-unknown"><span></span></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="direction-note">Use this if the strongest differentiator should be rigorous classification and public trust, even if the emotional warmth is a bit more restrained.</div>
+          </div>
+        </section>
+
+        <section class="direction" id="direction-4">
+          <div class="direction-head">
+            <div class="direction-label">Direction 4</div>
+            <h2>Family Table</h2>
+            <p>
+              Best if you want lived experience and support to feel more visible,
+              with the site presenting as a careful home base for the community.
+            </p>
+          </div>
+          <div class="mockup dir-4">
+            <div class="topbar">
+              <div class="brand"><div class="brand-mark">AG</div>AlphaGalData</div>
+              <div class="nav-row">
+                <div class="nav-chip">Featured Meals</div>
+                <div class="nav-chip">Store Help</div>
+                <div class="nav-chip">Cards</div>
+                <div class="nav-chip">Stories</div>
+              </div>
+            </div>
+            <div class="hero mockup-card">
+              <div class="status-pill">Real-world guidance, carefully curated</div>
+              <h3>A safer path through food, labels, and emergency decisions.</h3>
+              <p>
+                This direction gives more space to empathy, household routines,
+                and support language while still anchoring every page in
+                moderation and caution.
+              </p>
+            </div>
+            <div class="content-grid-2">
+              <div class="stack">
+                <div class="mockup-card panel">
+                  <h4>Featured family recipe</h4>
+                  <p>Recipe storytelling appears a bit more prominently, giving users a stronger sense that the advice comes from lived experience.</p>
+                </div>
+                <div class="mockup-card panel">
+                  <h4>Cross-contamination notes</h4>
+                  <p>Safety blocks feel like supportive coaching rather than terse warnings.</p>
+                </div>
+              </div>
+              <div class="stack">
+                <div class="mockup-card panel">
+                  <h4>Dining-safe cards</h4>
+                  <p>Cards and emergency-prep tools sit high in the hierarchy as practical confidence builders.</p>
+                </div>
+                <div class="mockup-card panel">
+                  <h4>Caregiver lane</h4>
+                  <p>Secondary navigation gently acknowledges spouses, parents, and helpers without turning the site into a forum.</p>
+                </div>
+              </div>
+            </div>
+            <div class="direction-note">Use this if empathy, shared experience, and family-tested trust should be visible as quickly as scientific caution.</div>
+          </div>
+        </section>
+
+        <section class="direction" id="direction-5">
+          <div class="direction-head">
+            <div class="direction-label">Direction 5</div>
+            <h2>Structured Ledger</h2>
+            <p>
+              Best if you want the cleanest, simplest, most standard interface
+              with minimal ornamental warmth and maximum scan speed.
+            </p>
+          </div>
+          <div class="mockup dir-5">
+            <div class="topbar">
+              <div class="brand"><div class="brand-mark">AG</div>AlphaGalData</div>
+              <div class="nav-row">
+                <div class="nav-chip">Home</div>
+                <div class="nav-chip">Recipes</div>
+                <div class="nav-chip">Scanner</div>
+                <div class="nav-chip">Downloads</div>
+              </div>
+            </div>
+            <div class="content-grid-3">
+              <div class="mockup-card panel">
+                <h4>Featured recipe</h4>
+                <p>Minimal chrome, strong labels, tight spacing, and a very standard content-card model.</p>
+              </div>
+              <div class="mockup-card panel">
+                <h4>Ingredient scanner</h4>
+                <p>The scanner becomes the most visibly structured tool in the system, almost spreadsheet-clean.</p>
+              </div>
+              <div class="mockup-card panel">
+                <h4>Resource downloads</h4>
+                <p>Dining cards and patient printables are presented like practical assets, not lifestyle content.</p>
+              </div>
+            </div>
+            <div class="mockup-card scanner-box" style="margin-top: 18px">
+              <h4>Fast interpretation</h4>
+              <div class="input">broth, carrageenan, whey, natural smoke flavor</div>
+              <div class="risk-table">
+                <div class="risk-row"><div class="risk-label">Known risk</div><div class="meter meter-known"><span></span></div></div>
+                <div class="risk-row"><div class="risk-label">Caution</div><div class="meter meter-caution"><span></span></div></div>
+                <div class="risk-row"><div class="risk-label">Unknown</div><div class="meter meter-unknown"><span></span></div></div>
+              </div>
+            </div>
+            <div class="direction-note">Use this if you want the safest path operationally: standard components, simple hierarchy, low design risk, and a very direct tool-first feel.</div>
+          </div>
+        </section>
+
+        <section class="direction" id="direction-6">
+          <div class="direction-head">
+            <div class="direction-label">Direction 6</div>
+            <h2>Decision Engine</h2>
+            <p>
+              Best if you want the strongest fusion of practical tool and
+              editorial trust, with the scanner and recipes clearly reinforcing
+              one another.
+            </p>
+          </div>
+          <div class="mockup dir-6">
+            <div class="topbar">
+              <div class="brand"><div class="brand-mark">AG</div>AlphaGalData</div>
+              <div class="nav-row">
+                <div class="nav-chip">Start here</div>
+                <div class="nav-chip">What can I eat?</div>
+                <div class="nav-chip">Check ingredients</div>
+                <div class="nav-chip">Emergency prep</div>
+              </div>
+            </div>
+            <div class="content-grid-2">
+              <div class="hero mockup-card">
+                <div class="status-pill">Conservative guidance for real-life decisions</div>
+                <h3>Choose food with confidence, not guesswork.</h3>
+                <p>
+                  The homepage behaves like a decision surface: recipe comfort on
+                  one side, ingredient caution on the other, with clear actions
+                  to save, scan, and prepare.
+                </p>
+                <div class="pill-row">
+                  <a class="button button-primary" href="#direction-6">Check ingredients</a>
+                  <a class="button button-secondary" href="#direction-6">Find a safe recipe</a>
+                </div>
+              </div>
+              <div class="mockup-card scanner-box">
+                <h4>Ingredient confidence model</h4>
+                <div class="input">gelatin, carrageenan, spice extract, sunflower oil</div>
+                <div class="risk-table">
+                  <div class="risk-row"><div class="risk-label">Known risk</div><div class="meter meter-known"><span></span></div></div>
+                  <div class="risk-row"><div class="risk-label">Caution</div><div class="meter meter-caution"><span></span></div></div>
+                  <div class="risk-row"><div class="risk-label">Unknown</div><div class="meter meter-unknown"><span></span></div></div>
+                </div>
+                <p>Explicitly designed to preserve confidence without overstating certainty.</p>
+              </div>
+            </div>
+            <div class="content-grid-3">
+              <div class="mockup-card panel">
+                <h4>Featured recipe lane</h4>
+                <p>Comfort food gets equal visual priority to scanner logic so the product never feels like a warning engine only.</p>
+              </div>
+              <div class="mockup-card panel">
+                <h4>Safety notes lane</h4>
+                <p>Known risk, caution, and next-step guidance become a reusable pattern across recipes, articles, and downloads.</p>
+              </div>
+              <div class="mockup-card panel">
+                <h4>Preparedness lane</h4>
+                <p>Dining cards and emergency info stay visible enough to support the full trust model.</p>
+              </div>
+            </div>
+            <div class="direction-note">Use this if you want the clearest expression of the product thesis: a calm, structured decision system for safe eating and safety planning.</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

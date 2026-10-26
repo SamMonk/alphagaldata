@@ -1,0 +1,6 @@
+.cache/
+public/
+node_modules/
+_bmad-output/
+_bmad/
+alphagaldata@0.1.0/

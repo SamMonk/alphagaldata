@@ -1,0 +1,1 @@
+I tried a new food and missed that is contained lard and gelatin and onw or both caused my body to get warm and itchy and I broke out in hives

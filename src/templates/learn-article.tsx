@@ -24,7 +24,7 @@ const ArticleTemplate: React.FC<ArticleTemplateProps> = ({ data, children }) => 
 
   return (
     <Layout title={title} description={description}>
-      <article className='prose prose-emerald max-w-3xl mx-auto prose-headings:text-slate-900 prose-a:text-emerald-600'>
+      <article className='prose prose-emerald mx-auto max-w-3xl prose-headings:scroll-mt-24 prose-headings:text-slate-900 prose-a:text-emerald-600 prose-p:leading-8 prose-li:leading-7'>
         <header className='not-prose mb-6 border-b border-slate-200 pb-4'>
           <p className='text-sm uppercase tracking-widest text-emerald-600 font-semibold'>Alpha-gal 101</p>
           <h1 className='text-3xl font-semibold text-slate-900 mt-2'>{title}</h1>
@@ -35,7 +35,21 @@ const ArticleTemplate: React.FC<ArticleTemplateProps> = ({ data, children }) => 
             ) : null}
           </div>
         </header>
-        <div className='prose'>{children}</div>
+        <div>{children}</div>
+        <section className='not-prose mt-10 grid gap-4 border-t border-slate-200 pt-6 md:grid-cols-3'>
+          <a className='card-link p-4 text-sm' href='/recipes'>
+            <h2 className='text-base font-semibold text-slate-900'>What can I eat?</h2>
+            <p className='mt-2 text-slate-600'>Move from education into recipe discovery when you are ready to act.</p>
+          </a>
+          <a className='card-link p-4 text-sm' href='/scanner'>
+            <h2 className='text-base font-semibold text-slate-900'>Check ingredients</h2>
+            <p className='mt-2 text-slate-600'>Use the scanner when a label or packaged ingredient list is the next decision.</p>
+          </a>
+          <a className='card-link p-4 text-sm' href='/downloads'>
+            <h2 className='text-base font-semibold text-slate-900'>Dining cards & prep</h2>
+            <p className='mt-2 text-slate-600'>Keep practical tools close once you finish reading the guide.</p>
+          </a>
+        </section>
       </article>
     </Layout>
   );

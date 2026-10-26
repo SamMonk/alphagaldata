@@ -30,7 +30,17 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   const nodes = result.data?.allMdx?.nodes || [];
 
   nodes.forEach((node) => {
-    const slug = node.frontmatter?.slug || `/content/${node.id}`;
+    const slug = node.frontmatter?.slug;
+    // Skip content files that have no explicit slug (e.g. raw staging sources
+    // like content/recipes/<name>/recipe.md). Publishing them would create
+    // thin, orphaned /content/<uuid>/ pages with no real content.
+    if (!slug) {
+      reporter.info(
+        `Skipping page creation for slug-less content file: ${node.internal.contentFilePath}`
+      );
+      return;
+    }
+
     const isRecipe = node.internal.contentFilePath.includes('/content/recipes/');
     const template = isRecipe ? recipeTemplate : learnTemplate;
 

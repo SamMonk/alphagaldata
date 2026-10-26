@@ -7,8 +7,7 @@
     "prepare:data": "node scripts/sync-ingredients.js",
     "build": "npm run prepare:data && gatsby build",
     "serve": "gatsby serve",
-    "deploy:s3": "S3_BUCKET=alphagal S3_REGION=us-east-1 ./scripts/deploy_s3.sh",
-    "deploy:s3:plugin": "npm run build && gatsby-plugin-s3 deploy --yes",
+    "deploy": "S3_BUCKET=alphagal ../deploy_s3.sh",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -17,7 +16,9 @@
     "tasks:cdc": "node scripts/fetch_cdc_ticks.js",
     "tasks:xlsx": "node scripts/convert_xlsx_to_geojson.js",
     "tasks:counties": "node scripts/prepare_counties.js",
-    "tasks:map": "node scripts/build_map_from_xlsx.js"
+    "tasks:map": "node scripts/build_map_from_xlsx.js",
+    "tasks:states": "node scripts/prepare_states.js",
+    "tasks:pins": "node scripts/generate_pins.js"
   },
   "dependencies": {
     "@zxing/browser": "^0.1.4",
@@ -54,6 +55,7 @@
     "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
+    "sharp": "^0.32.6",
     "tailwindcss": "^3.4.9",
     "typescript": "^5.5.4"
   }

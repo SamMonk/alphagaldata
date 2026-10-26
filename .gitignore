@@ -13,3 +13,9 @@ tf/override.tf.json
 # Environment overrides
 .env*
 !.env.example
+
+
+# Local-only / generated
+.claude/settings.local.json
+tf/*.tfplan
+tf/lambda/*.zip

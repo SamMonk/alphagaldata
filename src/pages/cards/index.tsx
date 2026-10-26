@@ -2,8 +2,22 @@ import React, { FormEvent, useState } from 'react';
 import Layout from '../../components/Layout';
 import affiliates from '../../../config/affiliates.json';
 import ingredients from '../../data/ingredients.json';
+import TrustNotice from '../../components/TrustNotice';
 
 const unique = <T,>(values: T[]) => Array.from(new Set(values));
+
+type AffiliateProgram = {
+  programId: string;
+  category: string;
+  url: string;
+  description?: string;
+};
+
+type PrintPartner = AffiliateProgram & {
+  id: string;
+};
+
+const affiliatePrograms = affiliates.programs as Record<string, AffiliateProgram>;
 
 const printPartnerIds = unique([
   ...(affiliates.placements?.wallet_cards || []),
@@ -11,8 +25,8 @@ const printPartnerIds = unique([
 ]);
 
 const printPartners = printPartnerIds
-  .map((id) => ({ id, ...affiliates.programs?.[id] }))
-  .filter((partner): partner is { id: string; programId: string; url: string; description?: string } => Boolean(partner && partner.url));
+  .map((id) => ({ id, ...affiliatePrograms[id] }))
+  .filter((partner): partner is PrintPartner => Boolean(partner && partner.url));
 
 const subscribeEndpoint = process.env.GATSBY_NEWSLETTER_ENDPOINT || '';
 
@@ -80,15 +94,38 @@ const CardsLandingPage: React.FC = () => {
   const highRiskCount = ingredients.items.filter(item => item.risk_level === 'avoid' || item.risk_level === 'high').length;
 
   return (
-    <Layout title='Cards & Medical Alert Tattoos' description='Free printable wallet cards, dining cards, and medical alert tattoo designs for alpha-gal syndrome. Protect yourself in restaurants and emergency rooms.'>
+    <Layout title='Cards & Medical Alert Tattoos' description='Free printable wallet cards, dining cards, and medical alert tattoo designs for alpha-gal syndrome. Protect yourself in restaurants and emergency rooms.' noindex>
       <section className='max-w-3xl mx-auto space-y-10'>
         <header className='text-center space-y-4'>
           <h1 className='text-3xl font-bold text-slate-900'>Alpha-gal Cards & Medical Alert Tattoos</h1>
           <p className='text-lg text-slate-600'>Printable cards for restaurants, medical alert tattoos for emergencies, and safe-print partners for your care team.</p>
         </header>
 
+        <TrustNotice title='Preparedness and communication tools' tone='amber'>
+          These cards and tattoo designs are educational support for emergencies, dining, and day-to-day communication.
+          They can help other people understand your needs quickly, but they do not replace clinician instructions or emergency care protocols.
+        </TrustNotice>
+
+        <div className='rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950'>
+          <p className='font-semibold'>Use this page as a shortcut, not the full library.</p>
+          <p className='mt-2'>
+            The primary public resource library lives on <a className='underline' href='/downloads'>/downloads</a>. Start there for the full dining card preview, related printable assets, and preparedness resources.
+          </p>
+        </div>
+
         <div className='card space-y-4'>
-          <h2 className='text-xl font-semibold text-slate-800'>Download the latest cards</h2>
+          <h2 className='text-xl font-semibold text-slate-800'>Start with the dining card</h2>
+          <p className='text-sm text-slate-600'>
+            If you need one practical tool for a restaurant visit, make the dining card your first stop. The full download library gives it the clearest preview and supporting context.
+          </p>
+          <div className='flex flex-wrap gap-2'>
+            <a className='btn inline-block' href='/downloads'>Open full download library</a>
+            <a className='btn inline-block' href='/learn/dining-card-guide'>Read dining card guide</a>
+          </div>
+        </div>
+
+        <div className='card space-y-4'>
+          <h2 className='text-xl font-semibold text-slate-800'>Quick download shortcuts</h2>
           <ul className='grid gap-4 md:grid-cols-2'>
             {downloadLinks.map(link => (
               <li key={link.href} className='border rounded-md p-4 shadow-sm bg-white'>
@@ -100,12 +137,12 @@ const CardsLandingPage: React.FC = () => {
                   target='_blank'
                   rel='noreferrer'
                 >
-                  Download
+                  Open file
                 </a>
               </li>
             ))}
           </ul>
-          <p className='text-xs text-slate-500'>Need custom messaging? Duplicate the PDF and edit in your preferred design tool or ask one of the print partners below.</p>
+          <p className='text-xs text-slate-500'>Need the clearest preview, print context, or related resources? Use <a className='underline' href='/downloads'>/downloads</a> instead of relying on shortcuts alone.</p>
         </div>
 
         <div className='card space-y-4'>

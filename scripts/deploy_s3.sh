@@ -24,6 +24,7 @@ aws s3 sync public "s3://$S3_BUCKET" \
   --delete \
   --size-only \
   --exclude "*.html" \
+  --exclude "ads.txt" \
   --cache-control "public, max-age=31536000, immutable"
 
 echo "Syncing HTML to s3://$S3_BUCKET with no-cache..."
@@ -34,6 +35,12 @@ aws s3 sync public "s3://$S3_BUCKET" \
   --exclude "*" \
   --include "*.html" \
   --cache-control "public, max-age=0, must-revalidate"
+
+echo "Syncing ads.txt with short cache and correct content type..."
+aws s3 cp public/ads.txt "s3://$S3_BUCKET/ads.txt" \
+  --region "$S3_REGION" \
+  --cache-control "public, max-age=86400" \
+  --content-type "text/plain; charset=utf-8"
 
 if [[ -n "$CF_DISTRIBUTION_ID" ]]; then
   echo "Creating CloudFront invalidation for /* on distribution $CF_DISTRIBUTION_ID ..."
