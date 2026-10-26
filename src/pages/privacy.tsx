@@ -73,6 +73,7 @@ export default function PrivacyPage() {
         <ul>
           <li>your cookie choice;</li>
           <li>recipes you save with the &quot;Save recipe&quot; button;</li>
+          <li>personal triggers you mark in the ingredient scanner (for example, &quot;I react to carrageenan&quot;);</li>
           <li>drafts of recipe or story submissions.</li>
         </ul>
         <p>You can delete this data at any time by clearing site data for alphagaldata.com in your browser.</p>

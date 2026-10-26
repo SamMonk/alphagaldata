@@ -123,7 +123,24 @@ Base notes only on the trial's title, summary, and fields in the data file.
    paragraph, then practical sections, a short "Questions to ask your allergist" list when
    relevant, and a `## Sources` list of numbered links you actually opened, each with
    publisher and title. Cite inline with links, not footnote numbers alone.
-5. Save as `automation/inbox/drafts/article-<slug>.mdx`:
+5. **Make it scannable, not a wall of text.** Articles render with these components (no
+   import needed; Markdown links and bold work inside them). Use them where they fit the
+   content, typically 4–6 per article, and keep plain paragraphs short between them:
+
+   - `<AtAGlance>` holding 3–4 `<Fact label="...">one sentence</Fact>`: right after the intro.
+   - `<Callout tone="emergency|warning|tip|info" title="...">...</Callout>`: the safety note,
+     common mistakes, practical tips.
+   - `<CardGrid>` with `<Card title="...">`: 2–6 parallel items (categories, risks).
+   - `<PlateGuide>` with `<PlateGroup level="fine|ask|avoid">` and `<PlateItem name="...">why</PlateItem>`:
+     food sorted into usually fine / ask how it was made / often contains mammal ingredients.
+   - `<Steps>` with `<Step title="...">`: ordered how-to.
+   - `<Timeline>` with `<When label="A week before" title="...">`: things that happen over time.
+   - `<Checklist title="...">` with `<Check>...</Check>`: tickable lists, e.g. what to bring or
+     questions for your allergist.
+
+   Every claim inside a component still needs its inline source link. Keep `## Sources` as a
+   plain numbered list.
+6. Save as `automation/inbox/drafts/article-<slug>.mdx`:
 
    ```yaml
    ---
@@ -136,7 +153,7 @@ Base notes only on the trial's title, summary, and fields in the data file.
    ```
 
    The slug must not match any existing page under `/learn/`.
-6. In the backlog, change that topic's `[ ]` to `[d]` (drafted) and add the draft filename.
+7. In the backlog, change that topic's `[ ]` to `[d]` (drafted) and add the draft filename.
 
 ## Task 4: Run log and report
 

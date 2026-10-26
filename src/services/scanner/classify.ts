@@ -306,6 +306,39 @@ const WATCHLIST: WatchlistEntry[] = [
   },
 ];
 
+/**
+ * Ingredients that are not mammalian but that some people with alpha-gal report reacting
+ * to. They never change the alpha-gal risk summary; the scanner page shows them separately
+ * and lets each reader mark them as their own trigger.
+ */
+export type PersonalTrigger = {
+  key: string;
+  label: string;
+  regex: RegExp;
+  explanation: string;
+  learn_more: string;
+};
+
+export const PERSONAL_TRIGGERS: PersonalTrigger[] = [
+  {
+    key: 'carrageenan',
+    label: 'Carrageenan',
+    // E407 / E407a are the EU additive numbers for carrageenan and processed eucheuma seaweed.
+    regex: /\b(carrageenan|carrageenin|E\s?-?407a?)\b(?!\s*-?\s*free)/i,
+    explanation:
+      'Carrageenan is a seaweed thickener, not a mammal product, but it can carry the alpha-gal sugar and some people with alpha-gal syndrome report reacting to it.',
+    learn_more: '/learn/carrageenan-and-alpha-gal',
+  },
+];
+
+export const findPersonalTriggers = (
+  text: string
+): Array<{ trigger: PersonalTrigger; matched_text: string }> =>
+  PERSONAL_TRIGGERS.flatMap((trigger) => {
+    const match = text.match(trigger.regex);
+    return match ? [{ trigger, matched_text: match[0] }] : [];
+  });
+
 const API_ENDPOINT = process.env.GATSBY_SCANNER_CLASSIFY_URL ?? '';
 
 const makeRequestId = (): string =>

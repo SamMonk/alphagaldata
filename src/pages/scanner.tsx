@@ -1,6 +1,7 @@
 import React from 'react';
 import type { DecodeHintType, Result } from '@zxing/library';
 import PreparednessResourcePanel from '../components/PreparednessResourcePanel';
+import PersonalTriggerNotice from '../components/scanner/PersonalTriggerNotice';
 import ScannerClassificationList from '../components/scanner/ScannerClassificationList';
 import ScannerEducationGuidance from '../components/scanner/ScannerEducationGuidance';
 import ScannerResultSummaryCard from '../components/scanner/ScannerResultSummaryCard';
@@ -834,6 +835,7 @@ export default function ScannerPage() {
                     </div>
                     <div className="text-sm">{combinedText}</div>
                   </div>
+                  <PersonalTriggerNotice text={combinedText} />
                 </>
               ) : (
                 <div className="rounded border border-slate-300 bg-slate-50 p-3 text-sm text-slate-700">
@@ -864,6 +866,7 @@ export default function ScannerPage() {
                 <div className="text-sm">{highlight(pasteResult, pasteMatches)}</div>
               </div>
               <ScannerClassificationList items={pasteMatches} />
+              <PersonalTriggerNotice text={pasteResult} />
               <ScannerEducationGuidance
                 summary={pasteSummary ?? fallbackSummaryFromMatches(pasteMatches)}
                 items={pasteMatches}
