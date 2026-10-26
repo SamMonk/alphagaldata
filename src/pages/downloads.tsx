@@ -108,7 +108,6 @@ export default function DownloadsPage() {
     <Layout
       title="Downloads & Designs"
       description="Free alpha-gal wallet cards, dining cards, medical alert tattoo designs, and brand assets. Print at home or order from our partners."
-      noindex
     >
       <section className="max-w-4xl mx-auto space-y-12">
         <header className="space-y-3 text-center">

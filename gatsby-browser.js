@@ -17,7 +17,9 @@ export const onRouteUpdate = ({ location }) => {
     });
   }
 
-  if (typeof window.gtag === "function") {
+  // gtag() always exists (Consent Mode stub in gatsby-ssr.js); only send once GA4 has
+  // actually been loaded after the visitor accepted cookies.
+  if (window.__agdGA && typeof window.gtag === "function") {
     window.gtag("event", "page_view", { page_path, send_to: MEASUREMENT_ID });
   }
 };

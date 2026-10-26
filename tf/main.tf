@@ -1,5 +1,5 @@
 locals {
-  aliases = var.include_www ? [var.domain_name, "www.${var.domain_name}"] : [var.domain_name]
+  aliases          = var.include_www ? [var.domain_name, "www.${var.domain_name}"] : [var.domain_name]
   s3_origin_domain = "${var.s3_bucket}.s3.${var.s3_bucket_region}.amazonaws.com"
 }
 
@@ -22,9 +22,9 @@ resource "aws_acm_certificate" "cf_cert" {
 resource "aws_route53_record" "cert_validation" {
   for_each = {
     for dvo in aws_acm_certificate.cf_cert.domain_validation_options : dvo.domain_name => {
-      name   : dvo.resource_record_name
+      name : dvo.resource_record_name
       record : dvo.resource_record_value
-      type   : dvo.resource_record_type
+      type : dvo.resource_record_type
     }
   }
   zone_id = data.aws_route53_zone.primary.zone_id
@@ -99,6 +99,22 @@ resource "aws_cloudfront_distribution" "site" {
   }
 
   price_class = var.price_class
+
+  # S3 (via OAC) answers missing keys with 403 AccessDenied XML. Serve Gatsby's
+  # 404 page with a real 404 status instead, for both 403 and 404 from the origin.
+  custom_error_response {
+    error_code            = 403
+    response_code         = 404
+    response_page_path    = "/404.html"
+    error_caching_min_ttl = 60
+  }
+
+  custom_error_response {
+    error_code            = 404
+    response_code         = 404
+    response_page_path    = "/404.html"
+    error_caching_min_ttl = 60
+  }
 
   restrictions {
     geo_restriction {

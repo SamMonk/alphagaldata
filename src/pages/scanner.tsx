@@ -559,9 +559,8 @@ export default function ScannerPage() {
 
   return (
     <Layout
-      title="Scanner"
-      description="Scan barcodes or paste ingredient lists to check for alpha-gal triggers. Color-coded risk tiers help identify mammalian-derived ingredients."
-      noindex
+      title="Alpha-Gal Ingredient Scanner"
+      description="Free alpha-gal ingredient checker: scan a barcode, photograph a label, or paste an ingredient list to flag mammalian-derived ingredients by risk level."
     >
       <div className="prose max-w-none">
         <h1>Ingredient & product scanner (beta)</h1>

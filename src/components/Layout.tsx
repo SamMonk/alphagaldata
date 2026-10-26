@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-import CookieConsent from "./CookieConsent";
+import CookieConsent, { openCookieSettings } from "./CookieConsent";
 import SEO from "./SEO";
 
 type LayoutProps = {
@@ -236,6 +236,15 @@ export default function Layout({
                   </a>
                 </li>
               ))}
+              <li>
+                <button
+                  className="text-slate-700 underline-offset-4 hover:text-slate-900 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                  type="button"
+                  onClick={openCookieSettings}
+                >
+                  Cookie settings
+                </button>
+              </li>
             </ul>
           </div>
         </div>

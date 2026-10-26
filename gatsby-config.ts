@@ -1,4 +1,11 @@
 import type { GatsbyConfig } from "gatsby";
+
+// remark-gfm is ESM-only; Node 22+ can require() it synchronously from this
+// CommonJS-compiled config. (The async wrapper in the gatsby-plugin-mdx README only
+// works for transformer plugins, not syntax extensions like GFM.)
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const remarkGfm = require("remark-gfm").default;
+
 const siteUrl = (process.env.SITE_URL || "https://alphagaldata.com").replace(/\/+$/, "");
 
 const plugins: any[] = [
@@ -14,12 +21,9 @@ const plugins: any[] = [
       excludes: [
         `/auth`, `/auth/`,
         `/submit-recipe`, `/submit-recipe/`,
-        `/scanner`, `/scanner/`,
-        `/heat-map`, `/heat-map/`,
         `/saved-recipes`, `/saved-recipes/`,
         `/recommended`, `/recommended/`,
         `/caregivers`, `/caregivers/`,
-        `/downloads`, `/downloads/`,
         `/cards`, `/cards/`,
         `/editorial`, `/editorial/`,
         `/moderation`, `/moderation/`,
@@ -28,7 +32,14 @@ const plugins: any[] = [
     },
   },
   { resolve: `gatsby-plugin-robots-txt`, options: { policy: [{ userAgent: `*`, allow: `/` }] } },
-  { resolve: `gatsby-plugin-mdx`, options: { extensions: [`.mdx`, `.md`] } },
+  {
+    resolve: `gatsby-plugin-mdx`,
+    options: {
+      extensions: [`.mdx`, `.md`],
+      // remark-gfm: Markdown tables, strikethrough, autolinks (not in MDX 2 by default)
+      mdxOptions: { remarkPlugins: [remarkGfm] },
+    },
+  },
   { resolve: `gatsby-source-filesystem`, options: { name: `pages`, path: `${__dirname}/src/pages` } },
   { resolve: `gatsby-source-filesystem`, options: { name: `articles`, path: `${__dirname}/content` } },
   {

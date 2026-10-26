@@ -3,16 +3,52 @@ title: Ads & Cookies
 ---
 
 import TopicLayout from "../components/TopicLayout";
+import { CookieSettingsButton } from "../components/CookieConsent";
 
-<TopicLayout title="Ads & Cookies" description="Information about advertising and cookie usage on this site.">
+<TopicLayout title="Ads & Cookies" description="Why AlphaGalData shows ads, which cookies and browser storage the site uses, and how to accept, reject, or change your cookie choice.">
 
-We participate in advertising programs to support hosting and development costs. We strive to keep ads unobtrusive
-and avoid placing ads on screens that are primarily navigational or tool-only.
+## Why there are ads
 
-Cookies may be used for analytics and ad-related purposes. You can manage your consent using the banner on this site.
-For privacy details, see our <a href="/privacy">Privacy</a> page.
+AlphaGalData is free, with no account and no paywall. Ads from Google AdSense help pay for hosting and for the time it takes to test recipes, check ingredient labels, and keep the guides current. Ads never change what we write: advertisers do not see drafts, sponsor articles, or choose which products we mention. Affiliate links are a separate program, explained in our [disclosure](/disclosure).
 
-This site is educational only and not medical advice.
+Ads appear only alongside our articles, guides, and recipes. We keep them off tools and forms, such as the [ingredient scanner](/scanner) and recipe submission, and off our policy and contact pages.
+
+## Your choice
+
+When you first visit, a banner asks whether you accept analytics and advertising cookies.
+
+- **Accept** turns on Google Analytics and lets Google use advertising cookies, which can include personalized ads.
+- **Reject** keeps analytics off and tells Google not to use advertising cookies or personalize ads. You may still see ads, but they are based on the page you are reading rather than on your browsing history.
+
+Nothing optional is set until you choose. You can change your mind at any time:
+
+<CookieSettingsButton />
+
+## What the site stores
+
+| Name | Set by | Purpose | When | How long |
+| --- | --- | --- | --- | --- |
+| `agd_cookie_consent_v2` (local storage) | AlphaGalData | Remembers your cookie choice | Always, after you choose | Until you clear site data |
+| Saved recipes and submission drafts (local storage) | AlphaGalData | Keeps your saved recipes and unfinished forms on your device | Only if you use those features | Until you clear site data |
+| `_ga`, `_ga_*` | Google Analytics | Counts visits and pages read | Only if you accept | Up to 2 years |
+| Advertising cookies such as `__gads`, `__gpi`, and cookies on Google ad domains | Google AdSense and its partners | Ad delivery, frequency limits, fraud prevention, and personalization | Only if you accept | Varies; see [Google's cookie list](https://policies.google.com/technologies/cookies) |
+| Amazon cookies | Amazon | Credits affiliate referrals | Only if you click an Amazon link | Set by Amazon |
+
+Local storage stays in your browser; we cannot read it from our servers.
+
+## Other ways to opt out
+
+- Manage Google ad personalization in [My Ad Center](https://myadcenter.google.com/).
+- Opt out of interest-based ads from many companies at [aboutads.info](https://optout.aboutads.info/).
+- Block Google Analytics everywhere with the [Google Analytics opt-out add-on](https://tools.google.com/dlpage/gaoptout).
+- Block or delete cookies in your browser's privacy settings.
+
+## Health information and ads
+
+Alpha-gal syndrome is a medical condition, so we are careful here. We do not tell advertisers that you read about alpha-gal, scanned a product, or saved a recipe, and we do not ask Google to target ads based on health conditions. Google's own policies also prohibit personalized ads based on health information.
+
+See the full [privacy policy](/privacy) for everything the site collects, or [contact us](/contact) with questions.
+
+This site is educational only and is not medical advice.
 
 </TopicLayout>
-

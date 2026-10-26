@@ -38,12 +38,6 @@ const CardsLandingPage: React.FC = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!subscribeEndpoint) {
-      setStatus('error');
-      setMessage('Set GATSBY_NEWSLETTER_ENDPOINT to enable email capture.');
-      return;
-    }
-
     try {
       setStatus('loading');
       setMessage('');
@@ -163,32 +157,35 @@ const CardsLandingPage: React.FC = () => {
           </div>
         </div>
 
-        <div className='card space-y-4'>
-          <h2 className='text-xl font-semibold text-slate-800'>Stay in the loop</h2>
-          <p className='text-sm text-slate-600'>We add new ingredients, restaurant scripts, and care tips as fresh data rolls in. Drop your email to get quarterly updates plus instant access to the editable card templates.</p>
-          <form onSubmit={handleSubmit} className='flex flex-col gap-3 md:flex-row'>
-            <label className='sr-only' htmlFor='email'>Email</label>
-            <input
-              id='email'
-              type='email'
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder='you@example.com'
-              className='flex-1 rounded-md border border-slate-300 px-4 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200'
-            />
-            <button
-              type='submit'
-              className='btn'
-              disabled={status === 'loading'}
-            >
-              {status === 'loading' ? 'Sending…' : 'Send me the cards'}
-            </button>
-          </form>
-          {message ? (
-            <p className={`text-sm ${status === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>{message}</p>
-          ) : null}
-        </div>
+        {/* Hidden until a newsletter endpoint exists, so visitors never see a dead form. */}
+        {subscribeEndpoint ? (
+          <div className='card space-y-4'>
+            <h2 className='text-xl font-semibold text-slate-800'>Stay in the loop</h2>
+            <p className='text-sm text-slate-600'>We add new ingredients, restaurant scripts, and care tips as fresh data rolls in. Drop your email to get quarterly updates plus instant access to the editable card templates.</p>
+            <form onSubmit={handleSubmit} className='flex flex-col gap-3 md:flex-row'>
+              <label className='sr-only' htmlFor='email'>Email</label>
+              <input
+                id='email'
+                type='email'
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder='you@example.com'
+                className='flex-1 rounded-md border border-slate-300 px-4 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200'
+              />
+              <button
+                type='submit'
+                className='btn'
+                disabled={status === 'loading'}
+              >
+                {status === 'loading' ? 'Sending…' : 'Send me the cards'}
+              </button>
+            </form>
+            {message ? (
+              <p className={`text-sm ${status === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>{message}</p>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className='card space-y-6'>
           <div>

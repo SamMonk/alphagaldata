@@ -8,7 +8,6 @@ export default function HeatMapPage() {
       title="Alpha-Gal Spread & Awareness Timeline"
       description="Interactive timeline map showing how alpha-gal syndrome awareness and lone star tick populations have spread across the United States from 2010 to present."
       image="https://alphagaldata.com/pins/spread-timeline.png"
-      noindex
     >
       <div className="space-y-8">
         <section className="card">
