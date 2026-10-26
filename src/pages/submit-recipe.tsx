@@ -6,7 +6,7 @@ import type {
   SubmissionIntakeResponseEnvelope,
   SubmissionType,
 } from '../contracts/submissions';
-import { submitPublicSubmission } from '../services/submissions/intake';
+import { isSubmissionIntakeConfigured, submitPublicSubmission } from '../services/submissions/intake';
 
 type FormErrors = Partial<Record<keyof SubmissionIntakeRequest, string>>;
 
@@ -151,6 +151,8 @@ export default function SubmitRecipePage() {
   };
 
   const isRecipe = form.submission_type === 'recipe';
+
+  if (!isSubmissionIntakeConfigured) return <EmailSubmissionGuide />;
 
   return (
     <Layout title='Submit a Recipe or Story' noindex>
@@ -478,6 +480,51 @@ export default function SubmitRecipePage() {
             </div>
           </form>
         </section>
+      </div>
+    </Layout>
+  );
+}
+
+function EmailSubmissionGuide() {
+  return (
+    <Layout title='Submit a Recipe or Story' noindex>
+      <div className='prose max-w-3xl'>
+        <h1>Share a recipe or your AGS story</h1>
+        <p>
+          We love hearing from other alpha-gal households. Email your recipe or story to{' '}
+          <strong>info@alphagaldata.com</strong>{' '}
+          <a href='mailto:info@alphagaldata.com?subject=Recipe%20submission'>(open in your mail app)</a>. Shawn reads
+          every submission. Nothing is published until we have cooked or checked it, and we will ask before crediting
+          you by name.
+        </p>
+
+        <h2>For a recipe, please include</h2>
+        <ul>
+          <li>The recipe name, how many it serves, and prep and cook times.</li>
+          <li>
+            The ingredients with amounts. Name the brand for anything packaged (broth, seasoning blends, sausage,
+            baking mixes) so we can check the label.
+          </li>
+          <li>The steps, in order.</li>
+          <li>Any swaps you made to avoid mammal products, and anything you tolerate that others might not, such as dairy.</li>
+          <li>A photo, if you have one you took yourself.</li>
+          <li>How you would like to be credited (full name, first name only, or anonymous).</li>
+        </ul>
+
+        <h2>For a story, please include</h2>
+        <ul>
+          <li>What happened, in your own words: a reaction, a diagnosis, a restaurant win or miss, a hidden ingredient you found.</li>
+          <li>What you wish you had known sooner.</li>
+          <li>How you would like to be credited.</li>
+        </ul>
+
+        <h2>What we will not publish</h2>
+        <p>
+          We do not publish treatment advice, claims that a product is definitely safe for everyone, or anything that
+          identifies other people without their permission. We may edit for length and clarity and will check facts
+          against reliable sources. See our <a href='/editorial-policy/'>editorial policy</a> and{' '}
+          <a href='/privacy/'>privacy policy</a> for how we handle what you send.
+        </p>
       </div>
     </Layout>
   );

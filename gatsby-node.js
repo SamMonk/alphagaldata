@@ -11,6 +11,7 @@ exports.createSchemaCustomization = ({ actions }) => {
       category: String
       reviewer: String
       reviewed_date: Date @dateformat
+      updated: Date @dateformat
     }
   `);
 };

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { graphql, PageProps } from 'gatsby';
 import Layout from '../components/Layout';
+import { AUTHOR_SCHEMA, PUBLISHER_SCHEMA } from '../components/SEO';
 
 type ArticleTemplateData = {
   mdx?: {
@@ -26,20 +27,36 @@ const ArticleTemplate: React.FC<ArticleTemplateProps> = ({ data, children }) => 
   const updatedDate = frontmatter?.updated ? new Date(frontmatter.updated) : publishDate;
   const reviewedDate = frontmatter?.reviewed_date ? new Date(frontmatter.reviewed_date) : null;
 
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    ...(frontmatter?.date && { datePublished: frontmatter.date }),
+    ...((frontmatter?.updated || frontmatter?.reviewed_date) && {
+      dateModified: frontmatter?.updated ?? frontmatter?.reviewed_date,
+    }),
+    author: AUTHOR_SCHEMA,
+    publisher: PUBLISHER_SCHEMA,
+  };
+
   return (
-    <Layout title={title} description={description}>
+    <Layout title={title} description={description} ogType='article' schema={[articleSchema]}>
       <article className='prose prose-emerald mx-auto max-w-3xl prose-headings:scroll-mt-24 prose-headings:text-slate-900 prose-a:text-emerald-600 prose-p:leading-8 prose-li:leading-7'>
         <header className='not-prose mb-6 border-b border-slate-200 pb-4'>
           <p className='text-sm uppercase tracking-widest text-emerald-600 font-semibold'>{frontmatter?.category ?? 'Alpha-gal 101'}</p>
           <h1 className='text-3xl font-semibold text-slate-900 mt-2'>{title}</h1>
           <div className='text-xs text-slate-500 mt-3 flex flex-wrap gap-4'>
+            <span>
+              By <a className='underline' href='/about/#who-we-are'>Shawn Monk</a>
+            </span>
             {publishDate ? <span>Published {publishDate.toLocaleDateString()}</span> : null}
             {updatedDate && publishDate && updatedDate.getTime() !== publishDate.getTime() ? (
               <span>Updated {updatedDate.toLocaleDateString()}</span>
             ) : null}
             {frontmatter?.reviewer ? (
               <span>
-                Reviewed by {frontmatter.reviewer}
+                Reviewed by {frontmatter.reviewer === 'Shawn Monk' ? 'Shawn' : frontmatter.reviewer}
                 {reviewedDate ? ` on ${reviewedDate.toLocaleDateString()}` : ''}
               </span>
             ) : null}
@@ -83,41 +100,3 @@ export const query = graphql`
 `;
 
 export default ArticleTemplate;
-
-export const Head: React.FC<ArticleTemplateProps> = ({ data, location }) => {
-  const frontmatter = data.mdx?.frontmatter;
-  const title = frontmatter?.title ? `${frontmatter.title} | AlphaGalData` : 'AlphaGalData';
-  const description = frontmatter?.description ?? 'Alpha-gal resources and ingredient data.';
-  const url = `https://alphagaldata.com${location.pathname}`;
-
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: frontmatter?.title ?? 'AlphaGalData',
-    description,
-    ...(frontmatter?.date && { datePublished: frontmatter.date }),
-    ...(frontmatter?.updated && { dateModified: frontmatter.updated }),
-    author: { '@type': 'Organization', name: 'AlphaGalData', url: 'https://alphagaldata.com' },
-    publisher: { '@type': 'Organization', name: 'AlphaGalData', url: 'https://alphagaldata.com' },
-    mainEntityOfPage: url,
-  };
-
-  return (
-    <>
-      <title>{title}</title>
-      <meta name='description' content={description} />
-      <link rel="canonical" href={url} />
-      <meta property="og:type" content="article" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={url} />
-      <meta property="og:site_name" content="AlphaGalData" />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <script type="application/ld+json">
-        {JSON.stringify(articleJsonLd)}
-      </script>
-    </>
-  );
-};

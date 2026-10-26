@@ -25,22 +25,6 @@ type HomePageData = {
   };
 };
 
-const organizationJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'AlphaGalData',
-  url: 'https://alphagaldata.com',
-  description:
-    'Safe recipes, ingredient scanner, tick heat maps, and evidence-based guides for people living with alpha-gal syndrome (AGS).',
-};
-
-const webSiteJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'AlphaGalData',
-  url: 'https://alphagaldata.com',
-};
-
 const recipeHighlightsFallback = [
   {
     title: 'Comfort-first recipe ideas',
@@ -75,31 +59,6 @@ const supportingGuides = [
     href: '/downloads',
   },
 ];
-
-export function Head() {
-  const title = 'AlphaGalData — What Can I Eat? Check Ingredients. Stay Prepared.';
-  const description =
-    'Find trusted recipe ideas, check ingredient lists conservatively, and keep dining and preparedness tools close at hand.';
-  const url = 'https://alphagaldata.com';
-
-  return (
-    <>
-      <title>{title}</title>
-      <meta name='description' content={description} />
-      <link rel='canonical' href={url} />
-      <meta property='og:type' content='website' />
-      <meta property='og:title' content={title} />
-      <meta property='og:description' content={description} />
-      <meta property='og:url' content={url} />
-      <meta property='og:site_name' content='AlphaGalData' />
-      <meta name='twitter:card' content='summary' />
-      <meta name='twitter:title' content={title} />
-      <meta name='twitter:description' content={description} />
-      <script type='application/ld+json'>{JSON.stringify(organizationJsonLd)}</script>
-      <script type='application/ld+json'>{JSON.stringify(webSiteJsonLd)}</script>
-    </>
-  );
-}
 
 export default function HomePage({ data }: PageProps<HomePageData>) {
   const baseFeaturedRecipes = (data?.featuredRecipes?.nodes ?? [])
@@ -140,7 +99,7 @@ export default function HomePage({ data }: PageProps<HomePageData>) {
 
   return (
     <Layout
-      title='AlphaGalData — What Can I Eat?'
+      title='AlphaGalData — What Can I Eat? Check Ingredients. Stay Prepared.'
       description='Find trusted recipe ideas, check ingredient lists conservatively, and keep dining and preparedness tools close at hand.'
     >
       <div className='space-y-8'>

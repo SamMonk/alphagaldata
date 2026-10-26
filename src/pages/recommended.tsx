@@ -33,7 +33,7 @@ const categories: Category[] = [
         title: 'Medical Alert Bracelet',
         description: 'Engraved silicone or stainless steel wristband for alpha-gal / no heparin alerts.',
         url: az('/s?k=medical+alert+bracelet+allergy+engraved'),
-        why: 'If you cannot speak during an emergency, a bracelet tells EMTs about your alpha-gal allergy and heparin restriction before they administer anything.',
+        why: 'If you cannot speak during an emergency, a bracelet tells responders about your alpha-gal allergy. Medical ID jewelry is what emergency crews are trained to look for.',
       },
       {
         title: 'Benadryl (Diphenhydramine) Tablets',

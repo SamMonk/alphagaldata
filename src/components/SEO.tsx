@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { useLocation } from '@reach/router';
 
 type SEOProps = {
   description?: string;
@@ -8,11 +9,22 @@ type SEOProps = {
   image?: string;
   type?: string;
   noindex?: boolean;
+  /** Page-specific JSON-LD (Article, Recipe, …) in addition to Organization/WebSite. */
+  schema?: Record<string, unknown>[];
 };
 
 const SITE_URL = 'https://alphagaldata.com';
 const SITE_NAME = 'AlphaGalData';
 const DEFAULT_DESCRIPTION = 'Evidence-based resources, maps, and tools for the alpha-gal community.';
+
+export const PUBLISHER_SCHEMA = { '@type': 'Organization', name: SITE_NAME, url: SITE_URL };
+
+// Default author for articles: Shawn lives with AGS and is responsible for the site's content.
+export const AUTHOR_SCHEMA = {
+  '@type': 'Person',
+  name: 'Shawn Monk',
+  url: `${SITE_URL}/about/`,
+};
 
 // Organization + WebSite schema — included on every page
 const orgSchema = {
@@ -33,7 +45,11 @@ const webSiteSchema = {
   publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
 };
 
-export default function SEO({ description, title, url, image, type, noindex }: SEOProps) {
+// The site's single source for <head> tags. Pages must not also export a Gatsby
+// `Head` that sets title/description/canonical, or those tags get duplicated.
+export default function SEO({ description, title, url, image, type, noindex, schema = [] }: SEOProps) {
+  const { pathname } = useLocation();
+  const canonical = url || `${SITE_URL}${pathname}`;
   const desc = description || DEFAULT_DESCRIPTION;
   const ogType = type || 'website';
   const ogImage = image || `${SITE_URL}/pins/newly-diagnosed.png`;
@@ -42,6 +58,7 @@ export default function SEO({ description, title, url, image, type, noindex }: S
     <Helmet>
       <meta name='viewport' content='width=device-width, initial-scale=1'/>
       <meta name='description' content={desc}/>
+      {!noindex && <link rel='canonical' href={canonical}/>}
       {/* Index policy — thin/functional/personal pages are excluded from search */}
       {noindex && <meta name='robots' content='noindex, follow'/>}
       {/* Favicons */}
@@ -52,7 +69,7 @@ export default function SEO({ description, title, url, image, type, noindex }: S
       <meta property="og:type" content={ogType}/>
       {title && <meta property="og:title" content={title}/>}
       <meta property="og:description" content={desc}/>
-      {url && <meta property="og:url" content={url}/>}
+      <meta property="og:url" content={canonical}/>
       <meta property="og:site_name" content={SITE_NAME}/>
       <meta property="og:image" content={ogImage}/>
       <meta property="og:image:width" content="1000"/>
@@ -67,6 +84,9 @@ export default function SEO({ description, title, url, image, type, noindex }: S
       {/* Structured Data */}
       <script type="application/ld+json">{JSON.stringify(orgSchema)}</script>
       <script type="application/ld+json">{JSON.stringify(webSiteSchema)}</script>
+      {schema.map((item, i) => (
+        <script key={i} type="application/ld+json">{JSON.stringify(item)}</script>
+      ))}
     </Helmet>
   );
 }

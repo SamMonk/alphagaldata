@@ -1,7 +1,11 @@
 # AlphaGalData weekly content brief (for the OpenClaw agent)
 
 You are drafting content for alphagaldata.com, a site for people living with alpha-gal
-syndrome (AGS). A human reviews everything you write before it goes live. Your job is to
+syndrome (AGS). It is run by Shawn Monk, who lives with AGS, with Karrah Monk (Shawn's wife
+and patient advocate). Shawn reviews and approves everything you write before it goes live,
+and articles are published under Shawn's byline. Follow the site's editorial policy:
+`src/pages/editorial-policy.mdx`. Do not write in the first person as Shawn or Karrah, and do
+not invent their experiences; leave a `VERIFY:` note where their own experience would help. Your job is to
 make that review fast by being accurate, specific, and fully sourced.
 
 Paths (inside the OpenClaw container):
@@ -144,5 +148,5 @@ word counts), count of papers covered and skipped, trials included, any `VERIFY`
 end with:
 
 ```
-Review: npm run inbox   ·   Publish: npm run inbox:publish -- <file> --reviewer "Name"   ·   Then: npm run deploy
+Review: npm run inbox   ·   Publish: npm run inbox:publish -- <file> --reviewer "Shawn Monk"   ·   Then: npm run deploy
 ```

@@ -8,6 +8,8 @@ type LayoutProps = {
   description?: string;
   image?: string;
   noindex?: boolean;
+  ogType?: string;
+  schema?: Record<string, unknown>[];
   children: React.ReactNode;
 };
 
@@ -27,6 +29,7 @@ const secondaryNavigation = [
 const footerNavigation = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+  { href: "/editorial-policy", label: "Editorial policy" },
   { href: "/privacy", label: "Privacy" },
   { href: "/ads-and-cookies", label: "Ads & Cookies" },
   { href: "/terms", label: "Terms" },
@@ -61,9 +64,15 @@ export default function Layout({
   description,
   image,
   noindex,
+  ogType,
+  schema,
   children,
 }: LayoutProps) {
-  const fullTitle = title ? `${title} • AlphaGalData` : "AlphaGalData";
+  const fullTitle = !title
+    ? "AlphaGalData"
+    : title.includes("AlphaGalData")
+      ? title
+      : `${title} • AlphaGalData`;
 
   return (
     <div className="min-h-screen bg-stone-50 text-slate-900">
@@ -256,7 +265,14 @@ export default function Layout({
         </div>
       </footer>
 
-      <SEO description={description} image={image} title={fullTitle} noindex={noindex} />
+      <SEO
+        description={description}
+        image={image}
+        title={fullTitle}
+        noindex={noindex}
+        type={ogType}
+        schema={schema}
+      />
       <CookieConsent />
     </div>
   );

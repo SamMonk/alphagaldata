@@ -141,7 +141,7 @@ const CardsLandingPage: React.FC = () => {
 
         <div className='card space-y-4'>
           <h2 className='text-xl font-semibold text-slate-800'>Why a medical alert tattoo?</h2>
-          <p className='text-sm text-slate-600'>In an emergency, you may not be able to speak. EMTs and ER staff check the inner wrist for medical alert bracelets and tattoos. An alpha-gal alert tattoo warns them to avoid mammal-derived medications that could trigger anaphylaxis:</p>
+          <p className='text-sm text-slate-600'>In an emergency, you may not be able to speak. A wrist alert is a backup that can't be lost, telling your care team about AGS before mammal-derived products such as heparin are used. Pair it with a medical ID bracelet, since responders are trained to look for those first:</p>
           <ul className='text-sm text-slate-600 space-y-1 list-disc list-inside'>
             <li><strong>Heparin</strong> — porcine-derived anticoagulant, standard in ER/surgery</li>
             <li><strong>Gelatin IV solutions</strong> — plasma expanders used in trauma</li>
@@ -208,7 +208,7 @@ const CardsLandingPage: React.FC = () => {
         <div className='card space-y-3'>
           <h2 className='text-xl font-semibold text-slate-800'>Ingredient watchlist</h2>
           <p className='text-sm text-slate-600'>Our automated pipeline now tracks <strong>{highRiskCount}</strong> high or avoid-risk ingredients. The dataset powers the `/learn` hub and the card templates so they stay current.</p>
-          <a className='btn inline-block' href='/learn/alpha-gal-101-what-to-avoid'>Read the latest ingredient guide</a>
+          <a className='btn inline-block' href='/learn/label-reading-and-cross-contamination'>Read the ingredient and label guide</a>
           <pre className='bg-slate-900 text-slate-100 text-xs p-4 rounded-md overflow-auto'>
             {JSON.stringify(ingredients.items.slice(0, 2), null, 2)}
           </pre>

@@ -22,6 +22,7 @@ const NO_AD_PATHS = new Set([
   "/terms",
   "/ads-and-cookies",
   "/disclosure",
+  "/editorial-policy",
   "/404",
   "/404.html",
   "/dev-404-page",

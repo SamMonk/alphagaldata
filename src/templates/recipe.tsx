@@ -2,6 +2,7 @@ import * as React from 'react';
 import { graphql, PageProps } from 'gatsby';
 import { useAuth } from 'react-oidc-context';
 import Layout from '../components/Layout';
+import { PUBLISHER_SCHEMA } from '../components/SEO';
 import RecipeSafetyNoteBlock from '../components/RecipeSafetyNoteBlock';
 import RecipeSaveButton from '../components/RecipeSaveButton';
 import TrustNotice from '../components/TrustNotice';
@@ -91,8 +92,36 @@ const RecipeTemplate: React.FC<RecipeTemplateProps> = ({ data }) => {
     .filter((node) => node.frontmatter?.slug !== fm?.slug)
     .slice(0, 2);
 
+  const recipeSchema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Recipe',
+    name: title,
+    description,
+    author: PUBLISHER_SCHEMA,
+    ...(fm?.image && { image: fm.image }),
+    ...(fm?.servings && { recipeYield: fm.servings }),
+    ...(toISO8601Duration(fm?.prep_time) && { prepTime: toISO8601Duration(fm?.prep_time) }),
+    ...(toISO8601Duration(fm?.cook_time) && { cookTime: toISO8601Duration(fm?.cook_time) }),
+    ...(fm?.safety_summary && {
+      recipeCuisine: 'Alpha-gal aware home cooking',
+    }),
+    ...(fm?.ingredients && { recipeIngredient: fm.ingredients }),
+    ...(fm?.steps && { recipeInstructions: fm.steps.map((step, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      text: step,
+    })) }),
+    recipeCategory: 'Alpha-gal safe',
+  };
+
   return (
-    <Layout title={title} description={description}>
+    <Layout
+      title={title}
+      description={description}
+      image={fm?.image ?? undefined}
+      ogType='article'
+      schema={[recipeSchema]}
+    >
       <div className="mb-6">
         <TrustNotice title="Recipe safety context" tone="teal">
           Every recipe on AlphaGalData is screened to avoid common alpha-gal triggers, but ingredient formulas and
@@ -352,56 +381,3 @@ function toISO8601Duration(timeStr: string | null | undefined): string | null {
   if (unit.startsWith('h')) return `PT${num}H`;
   return `PT${num}M`;
 }
-
-export const Head: React.FC<RecipeTemplateProps> = ({ data, location }) => {
-  const fm = data.mdx?.frontmatter;
-  const title = fm?.title
-    ? `${fm.title} | AlphaGalData`
-    : 'Safe Recipe | AlphaGalData';
-  const description =
-    fm?.description ?? 'Alpha-gal safe recipe from AlphaGalData.';
-  const url = `https://alphagaldata.com${location.pathname}`;
-
-  const recipeJsonLd: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'Recipe',
-    name: fm?.title ?? 'Alpha-Gal Safe Recipe',
-    description,
-    author: { '@type': 'Organization', name: 'AlphaGalData' },
-    ...(fm?.image && { image: fm.image }),
-    ...(fm?.servings && { recipeYield: fm.servings }),
-    ...(toISO8601Duration(fm?.prep_time) && { prepTime: toISO8601Duration(fm?.prep_time) }),
-    ...(toISO8601Duration(fm?.cook_time) && { cookTime: toISO8601Duration(fm?.cook_time) }),
-    ...(fm?.safety_summary && {
-      recipeCuisine: 'Alpha-gal aware home cooking',
-    }),
-    ...(fm?.ingredients && { recipeIngredient: fm.ingredients }),
-    ...(fm?.steps && { recipeInstructions: fm.steps.map((step, i) => ({
-      '@type': 'HowToStep',
-      position: i + 1,
-      text: step,
-    })) }),
-    recipeCategory: 'Alpha-gal safe',
-  };
-
-  return (
-    <>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <link rel="canonical" href={url} />
-      <meta property="og:type" content="article" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={url} />
-      <meta property="og:site_name" content="AlphaGalData" />
-      {fm?.image && <meta property="og:image" content={fm.image} />}
-      <meta name="twitter:card" content={fm?.image ? 'summary_large_image' : 'summary'} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      {fm?.image && <meta name="twitter:image" content={fm.image} />}
-      <script type="application/ld+json">
-        {JSON.stringify(recipeJsonLd)}
-      </script>
-    </>
-  );
-};

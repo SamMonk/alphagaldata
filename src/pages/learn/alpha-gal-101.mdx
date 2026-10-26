@@ -7,9 +7,7 @@ import TopicLayout from "../../components/TopicLayout";
 import TrustNotice from "../../components/TrustNotice";
 import { IconBrandTick, IconInfo } from "../../components/icons";
 
-export const Head = () => <title>Alpha-gal 101 • AlphaGalData</title>;
-
-<TopicLayout title="Alpha-gal 101" description="A comprehensive beginner's guide to alpha-gal syndrome — what it is, how it starts, and how to navigate life after diagnosis." image="https://alphagaldata.com/pins/newly-diagnosed.png">
+<TopicLayout title="Alpha-gal 101" description="A comprehensive beginner's guide to alpha-gal syndrome — what it is, how it starts, and how to navigate life after diagnosis." image="https://alphagaldata.com/pins/newly-diagnosed.png" reviewed="2026-10-26">
 
 <TrustNotice title="Getting oriented" tone="teal">
 AlphaGalData is an educational support resource for understanding AGS and preparing better questions, safer food decisions, and practical next steps. It should not be used as a substitute for diagnosis or personalized medical advice.
@@ -19,12 +17,12 @@ If you have recently been diagnosed with alpha-gal syndrome — or suspect you m
 
 ## What is alpha-gal syndrome?
 
-Alpha-gal syndrome (AGS) is a tick-bite-induced allergy to a carbohydrate molecule called galactose-α-1,3-galactose, found in most mammals. When certain ticks — primarily the lone star tick in the U.S. — bite a human, they can transfer alpha-gal from their saliva into the bloodstream. The immune system may then produce IgE antibodies against alpha-gal, triggering allergic reactions when mammalian meat or byproducts are consumed.
+Alpha-gal syndrome (AGS) is a serious, potentially life-threatening allergy linked to tick bites ([CDC](https://www.cdc.gov/alpha-gal-syndrome/about/index.html)). People with AGS react to galactose-α-1,3-galactose ("alpha-gal"), a sugar molecule made by most mammals but not by people. In the U.S., the lone star tick is most often associated with AGS. Alpha-gal can be present in tick saliva and may enter the body during a bite ([ACAAI](https://acaai.org/allergies/allergic-conditions/food/meat/)); the immune system may then make IgE antibodies against it, which trigger reactions when you eat mammalian meat or products made from mammals.
 
 What makes AGS unusual among food allergies:
 - **It is caused by a tick bite**, not by genetics or early food exposure.
-- **It targets a sugar molecule**, not a protein — which is why standard allergy tests often miss it.
-- **Reactions are delayed** by three to six hours, because alpha-gal is carried in fats that take longer to digest.
+- **It targets a sugar molecule**, not a protein, so it needs its own blood test (alpha-gal IgE) rather than a standard beef or pork allergy panel alone.
+- **Reactions are delayed**, usually by 2 to 6 hours ([CDC](https://www.cdc.gov/alpha-gal-syndrome/signs-symptoms/index.html)). The leading explanation is that alpha-gal in meat travels with fat, which is absorbed slowly ([NIAID workshop report](https://pubmed.ncbi.nlm.nih.gov/32057766/)).
 
 For a deeper dive, see [What is Alpha-Gal Syndrome?](/learn/what-is-alpha-gal).
 
@@ -32,17 +30,17 @@ For a deeper dive, see [What is Alpha-Gal Syndrome?](/learn/what-is-alpha-gal).
 
 Many people with AGS figure out what is wrong before their doctors do. The typical experience goes something like this: you start having unexplained digestive problems — cramping, nausea, or diarrhea that comes and goes without a clear pattern. Or you break out in hives in the middle of the night. You visit your doctor, maybe several doctors, and get tested for common GI conditions. Nothing definitive comes back. Eventually, through your own research or a lucky referral, you encounter alpha-gal syndrome, the symptoms match, and a blood test confirms it.
 
-This self-diagnosis path is so common in the AGS community that it is practically the norm. If you brought the diagnosis to your doctor rather than the other way around, you are in good company.
+This self-diagnosis path is common in the AGS community, and it is how Shawn, who runs this site, was diagnosed. Part of the reason: in a 2022 CDC survey, 42% of health care providers had never heard of AGS ([MMWR, 2023](https://www.cdc.gov/mmwr/volumes/72/wr/mm7230a1.htm)). If you brought the diagnosis to your doctor rather than the other way around, you are in good company.
 
-The confirming test is a blood draw measuring IgE antibodies specific to alpha-gal (Labcorp #650001 or Quest #10554). See our [testing page](/testing) for details.
+The key test is a blood draw measuring IgE antibodies specific to alpha-gal (Labcorp 650001 or Quest 10554). A positive result has to be read alongside your symptoms; on its own it does not mean you have AGS ([CDC](https://www.cdc.gov/alpha-gal-syndrome/hcp/diagnosis-testing/index.html)). See our [testing page](/testing) and [symptoms and diagnosis guide](/learn/symptoms-and-diagnosis).
 
 ## What you need to avoid
 
 ### Mammalian meat
-The most obvious category: beef, pork, lamb, goat, venison, bison, and any other meat from a mammal. This includes organ meats, processed meats (sausage, hot dogs, deli meat), and meat-based broths and stocks.
+The most obvious category: beef, pork, lamb, goat, venison, bison, rabbit, and any other meat from a mammal. This includes organ meats, processed meats (sausage, hot dogs, deli meat), and meat broths, bouillon, stock, and gravy ([CDC](https://www.cdc.gov/alpha-gal-syndrome/data-research/products-containing-alpha-gal/index.html)).
 
 ### Dairy
-This is where AGS gets complicated. Dairy products — milk, cheese, butter, cream, yogurt, and ice cream — contain alpha-gal. However, dairy sensitivity varies enormously between patients. Some can tolerate moderate amounts of dairy, particularly aged cheeses or butter. Others have zero tolerance and react to trace amounts. Your allergist can help you determine where you fall, but be cautious while figuring out your threshold.
+This is where AGS gets complicated. Milk and milk products may contain alpha-gal, but CDC notes that many patients with AGS can tolerate them ([CDC](https://www.cdc.gov/alpha-gal-syndrome/data-research/products-containing-alpha-gal/index.html)). Sensitivity varies enormously. Some people eat dairy freely, some react only to high-fat products like cream, butter, or ice cream, and some react to trace amounts. Your allergist can help you work out where you fall; be cautious while you figure it out.
 
 ### Gelatin and hidden ingredients
 Gelatin is made from animal collagen and is one of the most common hidden triggers:
@@ -51,37 +49,49 @@ Gelatin is made from animal collagen and is one of the most common hidden trigge
 - Marshmallows and many desserts
 - Some yogurts and sour creams (used as a thickener)
 
-Other hidden mammalian ingredients to watch for: lard, tallow, "natural flavors" (which can be mammalian-derived), magnesium stearate in pills, and carmine (a red dye from insects, which some patients react to).
+Other hidden mammalian ingredients to watch for: lard, tallow, suet, "natural flavors" (which can be mammal-derived), and glycerin or magnesium stearate in pills. (Carmine, a red dye, comes from insects and does not contain alpha-gal.) Our [label reading guide](/learn/label-reading-and-cross-contamination) goes deeper.
 
 ### Medications
 This is the area that catches many newly diagnosed patients off guard. Common medication concerns include:
 - **Gelatin capsules** — request tablet or vegetarian capsule alternatives from your pharmacist.
-- **Heparin** — a blood thinner derived from pig intestines, routinely used in hospitals. Alert your medical team and request alternatives.
-- **Certain vaccines** — some contain gelatin as a stabilizer or are grown on mammalian cell lines. Discuss with your allergist before vaccination.
+- **Heparin** — a blood thinner usually made from pig intestine and used routinely in hospitals. It is on CDC's list of products that may contain alpha-gal, along with pig or cow heart valves, some monoclonal antibodies, and certain antivenoms ([CDC](https://www.cdc.gov/alpha-gal-syndrome/data-research/products-containing-alpha-gal/index.html)). Make sure it is flagged in your chart.
+- **Vaccines** — some contain gelatin. Reactions are very rare, but CDC recommends talking to your provider before a new vaccine or medication ([CDC](https://www.cdc.gov/alpha-gal-syndrome/managing/index.html)). Don't skip vaccines on your own.
+- **Personal care products** — some soaps and lotions contain tallow, collagen, or other animal-derived ingredients. Reactions through the skin are less well studied than reactions to food, so ask your allergist how careful you need to be.
 
 Our [ingredient scanner](/scanner) can help you check products for mammalian-derived ingredients.
 
 ## What is safe to eat
 
 The good news is that the list of safe foods is large:
-- **Poultry** — chicken, turkey, duck, and other birds are safe.
-- **Fish and seafood** — all varieties are safe.
+- **Poultry** — chicken, turkey, duck, and other birds ([CDC](https://www.cdc.gov/alpha-gal-syndrome/data-research/products-containing-alpha-gal/index.html)).
+- **Fish and seafood** — these do not contain alpha-gal.
 - **Fruits, vegetables, grains, and legumes** — all plant-based foods are safe.
 - **Eggs** — safe (they come from birds, not mammals).
 - **Plant-based dairy alternatives** — oat milk, almond milk, coconut cream, and similar products are safe substitutes.
 
 Many AGS patients find that their diet actually becomes more varied and adventurous after diagnosis, as they explore cuisines that are naturally low in mammalian ingredients — seafood, poultry-focused dishes, Asian cuisines, and plant-based cooking.
 
-Browse our [safe recipes](/recipes) for meal ideas that are reviewed for alpha-gal safety.
+### Everyday swaps
+
+| Instead of… | Try… |
+| --- | --- |
+| Beef burgers | Ground turkey or chicken, or chickpea, black bean, or mushroom patties |
+| Gelatin desserts and gummies | Pectin- or agar-based versions |
+| Pork sausage and bacon | Turkey or chicken sausage, or plant-based versions (check for casings) |
+| Beef or pork broth | Chicken or vegetable broth |
+| Heavy cream and butter (if dairy bothers you) | Oat, coconut, or soy creamers; plant-based butter |
+| Lard in baking | Vegetable shortening or oil |
+
+Browse our [recipes](/recipes) for meal ideas that are checked for alpha-gal triggers. For restaurants, a printed [dining card](/learn/dining-card-guide) makes it easier to ask about broths, cooking fats, and shared fryers.
 
 ## Building your safety net
 
 ### Emergency preparedness
-Talk to your allergist about whether you need to carry an epinephrine auto-injector (EpiPen). Even if your current reactions are mild, AGS severity can change over time — especially after additional tick bites. Having an EpiPen and knowing when to use it is a baseline safety measure.
+Talk to your allergist about carrying epinephrine; they will help you choose a device ([ACAAI](https://acaai.org/allergies/allergic-conditions/food/meat/)). Even if your reactions so far have been mild, they can differ from one exposure to the next ([CDC](https://www.cdc.gov/alpha-gal-syndrome/signs-symptoms/index.html)), and new tick bites may reactivate the allergy.
 
 ### Medical identification
-In an emergency, you may not be able to tell medical staff about your allergy. Standard ER medications like heparin can trigger anaphylaxis in AGS patients. Consider:
-- A [medical alert tattoo](/learn/medical-alert-tattoo) on your inner wrist — EMTs check there first.
+In an emergency, you may not be able to tell medical staff about your allergy, and some hospital products, like heparin, may contain alpha-gal. Consider:
+- A [medical alert tattoo](/learn/medical-alert-tattoo) on your inner wrist.
 - A medical alert bracelet.
 - Your phone lock screen displaying your allergy and emergency contact.
 
@@ -108,7 +118,19 @@ Some things that help with the long-term adjustment:
 - **Keep a food diary** during the early months to track what you eat and any symptoms that follow. This helps identify your specific triggers and sensitivity level.
 - **Stock your kitchen** with safe staples so you always have something to eat without having to scrutinize labels in the moment.
 - **Prepare for social situations** in advance. Family gatherings, work events, and travel all require planning. Eating beforehand, bringing your own food, or choosing restaurants carefully are all common strategies.
-- **Stay informed.** Alpha-gal research is advancing quickly. New findings about triggers, treatments, and the underlying immune mechanisms are published regularly.
+- **Prevent new tick bites.** People who avoid new bites may see their sensitivity fade over time, and some can eventually tolerate alpha-gal products again under their allergist's guidance ([CDC](https://www.cdc.gov/alpha-gal-syndrome/managing/index.html)). See the [prevention guide](/learn/prevention).
+- **Stay informed.** Alpha-gal research is moving quickly. Our [research tracker](/research) summarizes new studies and clinical trials.
+
+## Sources
+
+1. CDC. [About Alpha-gal Syndrome](https://www.cdc.gov/alpha-gal-syndrome/about/index.html). Reviewed January 5, 2026.
+2. CDC. [Symptoms of Alpha-gal Syndrome](https://www.cdc.gov/alpha-gal-syndrome/signs-symptoms/index.html).
+3. CDC. [Products That May Contain Alpha-gal](https://www.cdc.gov/alpha-gal-syndrome/data-research/products-containing-alpha-gal/index.html).
+4. CDC. [Managing Alpha-gal Syndrome](https://www.cdc.gov/alpha-gal-syndrome/managing/index.html).
+5. CDC. [Clinical Diagnosis and Testing for Alpha-gal Syndrome](https://www.cdc.gov/alpha-gal-syndrome/hcp/diagnosis-testing/index.html).
+6. Carpenter A, et al. [Health Care Provider Knowledge Regarding Alpha-gal Syndrome — United States, 2022](https://www.cdc.gov/mmwr/volumes/72/wr/mm7230a1.htm). *MMWR*. 2023;72(30).
+7. Platts-Mills TAE, et al. [On the cause and consequences of IgE to galactose-α-1,3-galactose: a report from the NIAID workshop](https://pubmed.ncbi.nlm.nih.gov/32057766/). *J Allergy Clin Immunol*. 2020;145(4):1061–1071.
+8. American College of Allergy, Asthma and Immunology. [Meat Allergy](https://acaai.org/allergies/allergic-conditions/food/meat/).
 
 This page is educational only and not medical advice. Always consult a board-certified allergist for diagnosis and treatment.
 

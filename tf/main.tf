@@ -44,12 +44,25 @@ resource "aws_acm_certificate_validation" "cf_cert_validation" {
 resource "aws_cloudfront_function" "index_rewrite" {
   name    = "alphagal-index-rewrite"
   runtime = "cloudfront-js-2.0"
-  comment = "Append /index.html to directory-style paths for Gatsby SSG on S3"
+  comment = "Redirects + append /index.html to directory-style paths for Gatsby SSG on S3"
   publish = true
   code    = <<-EOF
+    // Permanent redirects for retired or merged pages (keys without trailing slash).
+    var redirects = {
+      "/learn/alpha-gal-101-what-to-avoid": "/learn/alpha-gal-101/"
+    };
+
     function handler(event) {
       var request = event.request;
       var uri = request.uri;
+      var target = redirects[uri.replace(/\/+$/, "")];
+      if (target) {
+        return {
+          statusCode: 301,
+          statusDescription: "Moved Permanently",
+          headers: { location: { value: target } }
+        };
+      }
       if (uri.endsWith("/")) {
         request.uri += "index.html";
       } else if (!uri.split("/").pop().includes(".")) {

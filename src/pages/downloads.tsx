@@ -351,7 +351,7 @@ export default function DownloadsPage() {
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold text-slate-800">Medical Alert Tattoos</h2>
           <p className="text-sm text-slate-600">
-            EMTs check the inner wrist for medical alerts. These designs warn responders to avoid mammal-derived medications like heparin, gelatin IVs, and bovine surgical products.
+            A wrist alert backs up your medical ID bracelet and wallet card, telling your care team about AGS before mammal-derived products such as heparin or animal-tissue heart valves are used.
           </p>
           <div className="grid gap-6 md:grid-cols-2">
             {tattoos.map((asset) => (

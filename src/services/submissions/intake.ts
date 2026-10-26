@@ -21,6 +21,13 @@ const STORY_ENDPOINT =
   process.env.GATSBY_SUBMISSIONS_STORIES_URL ??
   (API_BASE_URL ? `${API_BASE_URL}/submissions/stories` : '');
 
+/**
+ * True only when both submission endpoints are configured. Without them, submissions
+ * would only be saved in the visitor's browser, so the public page falls back to an
+ * email-based submission guide instead of a form that silently goes nowhere.
+ */
+export const isSubmissionIntakeConfigured = Boolean(RECIPE_ENDPOINT && STORY_ENDPOINT);
+
 type StoredSubmission = SubmissionIntakeRequest &
   SubmissionIntakeData & {
     stored_at: string;

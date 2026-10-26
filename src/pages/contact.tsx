@@ -27,7 +27,7 @@ export default function ContactPage() {
             fix it faster.
           </li>
           <li>
-            <strong>Recipes.</strong> Use the <a href='/submit-recipe'>recipe submission form</a>. We test and
+            <strong>Recipes.</strong> See <a href='/submit-recipe'>how to submit a recipe</a>. We test and
             label-check recipes before publishing them.
           </li>
           <li>
