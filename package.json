@@ -18,7 +18,11 @@
     "tasks:counties": "node scripts/prepare_counties.js",
     "tasks:map": "node scripts/build_map_from_xlsx.js",
     "tasks:states": "node scripts/prepare_states.js",
-    "tasks:pins": "node scripts/generate_pins.js"
+    "tasks:pins": "node scripts/generate_pins.js",
+    "tasks:weekly-fetch": "node scripts/automation/fetch_weekly.js",
+    "inbox": "node scripts/automation/publish.js list",
+    "inbox:publish": "node scripts/automation/publish.js publish",
+    "inbox:reject": "node scripts/automation/publish.js reject"
   },
   "dependencies": {
     "@zxing/browser": "^0.1.4",

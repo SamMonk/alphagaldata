@@ -21,10 +21,12 @@ const primaryNavigation = [
 const secondaryNavigation = [
   { href: "/testing", label: "Testing guide" },
   { href: "/heat-map", label: "Tick heat map" },
+  { href: "/research", label: "Research tracker" },
 ];
 
 const footerNavigation = [
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
   { href: "/privacy", label: "Privacy" },
   { href: "/ads-and-cookies", label: "Ads & Cookies" },
   { href: "/terms", label: "Terms" },

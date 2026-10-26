@@ -1,6 +1,20 @@
 const fs = require("fs");
 const path = require("path");
 
+// Declare optional frontmatter fields so queries work even before any file sets them.
+exports.createSchemaCustomization = ({ actions }) => {
+  actions.createTypes(`
+    type Mdx implements Node {
+      frontmatter: MdxFrontmatter
+    }
+    type MdxFrontmatter @infer {
+      category: String
+      reviewer: String
+      reviewed_date: Date @dateformat
+    }
+  `);
+};
+
 exports.createPages = async ({ graphql, actions, reporter }) => {
   const { createPage } = actions;
   const learnTemplate = path.resolve(__dirname, 'src/templates/learn-article.tsx');

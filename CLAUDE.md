@@ -85,6 +85,8 @@ python data-pipelines/market/market_data.py            # Market data only
 
 **Mapping:** Leaflet/React Leaflet with TopoJSON for tick surveillance heatmaps.
 
+**Weekly content automation (OpenClaw):** Two OpenClaw cron jobs (Mondays, ET) in the `openclaw-docker-clean` container: `alphagal-weekly-fetch` (06:00, runs `scripts/automation/fetch_weekly.js` → PubMed + ClinicalTrials.gov into `automation/inbox/data/`) and `alphagal-weekly-drafts` (07:00, agent follows `automation/BRIEF.md` → drafts in `automation/inbox/drafts/`, posts to Discord #coding-and-projects). The container mounts this repo read-only with only `automation/` writable (see `../../openclaw-docker-clean/docker-compose.override.yml`). Nothing goes live without review: `npm run inbox` → `npm run inbox:publish -- <file> --reviewer "Name"` → `npm run deploy`. Digests land in `content/research/` (shown on `/research`), articles in `content/articles/`, trials in `src/data/research/trials.json`. Topic queue: `automation/content-backlog.md`.
+
 **CMS:** Decap CMS writes to S3 bucket `alphagal-decapcms`; Cognito handles editor auth.
 
 **Terraform:** `alphagaldata/tf/` manages CloudFront (E2ME15PLS6E69R), ACM, Route53, Cognito. State is local only (gitignored).

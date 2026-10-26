@@ -14,6 +14,9 @@ tf/override.tf.json
 .env*
 !.env.example
 
+# OpenClaw automation scratch (drafts/data); state/ and BRIEF are tracked
+automation/inbox/
+automation/archive/
 
 # Local-only / generated
 .claude/settings.local.json
